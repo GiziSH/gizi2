@@ -76,22 +76,47 @@ public class Fragment3 extends Fragment  {
         mlistView = (ListView) v.findViewById(R.id.listView);
         mArrayList = new ArrayList<>();
         mArrayList2 = new ArrayList<>();
-        GetData task = new GetData();
-        task.execute("http://192.168.0.7/searchtest.php");
+        //GetData task = new GetData();
+        //task.execute("http://192.168.0.7/searchtest.php");
 
 
         CheckBox favorite = (CheckBox) v.findViewById(R.id.checkboxbookmark) ;
 
         // 지하철역,휴게소 선택
-        String [] values1 = {"지하철역","휴게소"};
+        String [] values1 = {"선택","지하철역","휴게소"};
         MySpinner1 = (Spinner)v.findViewById(R.id.option);
-        ArrayAdapter<String> adapterSpinner1 = new ArrayAdapter(this.getActivity(), android.R.layout.simple_spinner_item);
+        final ArrayAdapter<String> adapterSpinner1 = new ArrayAdapter(this.getActivity(), android.R.layout.simple_spinner_item);
         adapterSpinner1.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
         MySpinner1.setAdapter(adapterSpinner1);
         adapterSpinner1.addAll(values1);
+        MySpinner1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+             @Override
+             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                 switch (position){
+                     case 0:
+                         mArrayList.clear();
+                         break;
+                     case 1:
+                         mArrayList.clear();
+                         GetData task = new GetData();
+                         task.execute("http://192.168.0.7/subway_search.php");
+                         break;
+                     case 2:
+                         mArrayList.clear();
+                         GetData task2 = new GetData();
+                         task2.execute("http://192.168.0.7/restarea_search.php");
+                         break;
+                 }
+             }
 
-        editSearch = (EditText)v.findViewById(R.id.editSearch);
+             @Override
+             public void onNothingSelected(AdapterView<?> parent) {
 
+             }
+         });
+
+
+        editSearch = (EditText) v.findViewById(R.id.editSearch);
 
 
 

@@ -124,13 +124,13 @@ public class Fragment3 extends Fragment  {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                option op = new option();
+                fragment2_option op = new fragment2_option();
                 android.support.v4.app.FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.fragment_container, op);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
 
-                //Intent intent = new Intent(getActivity(),option.class);
+                //Intent intent = new Intent(getActivity(),fragment2_option.class);
                 //startActivity(intent);
 
             }

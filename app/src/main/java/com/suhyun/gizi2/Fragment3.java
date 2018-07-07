@@ -102,6 +102,7 @@ public class Fragment3 extends Fragment  {
                 option op = new option();
                 android.support.v4.app.FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.fragment_container, op);
+                fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
 
                 //Intent intent = new Intent(getActivity(),option.class);

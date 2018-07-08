@@ -124,13 +124,14 @@ public class Fragment3 extends Fragment  {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                fragment2_option op = new fragment2_option();
+                Toast.makeText(getActivity(),mArrayList.get(position).get(TAG_name),Toast.LENGTH_SHORT).show();
+                fragment3_option op = new fragment3_option();
                 android.support.v4.app.FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.fragment_container, op);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
 
-                //Intent intent = new Intent(getActivity(),fragment2_option.class);
+                //Intent intent = new Intent(getActivity(),fragment3_option.class);
                 //startActivity(intent);
 
             }
@@ -368,9 +369,6 @@ public class Fragment3 extends Fragment  {
 
 
 
-    public void onListItemClick(ListView l, View v, int position, long id) {
-
-    }
 
 
 

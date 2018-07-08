@@ -28,7 +28,7 @@ import java.util.List;
  * Created by suhyun on 2018-07-08.
  */
 
-public class fragment2_toiletstate extends Fragment {
+public class fragment3_toiletstate extends Fragment {
 
     private static String TAG = "phptest_MainActivity";
 
@@ -45,10 +45,10 @@ public class fragment2_toiletstate extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment2_toiletstate, container, false);
+        View v = inflater.inflate(R.layout.fragment3_toiletstate, container, false);
         mTextViewResult = (TextView)v.findViewById(R.id.textView_main_result);
         List mArrayList = new ArrayList<>();
-        fragment2_toiletstate.GetData task = new fragment2_toiletstate.GetData();
+        fragment3_toiletstate.GetData task = new fragment3_toiletstate.GetData();
         task.execute("http://192.168.0.7/gizitest.php");
 
         return v;

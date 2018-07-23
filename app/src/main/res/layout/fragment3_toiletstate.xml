@@ -100,9 +100,10 @@
         android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:layout_marginTop="15dp"
         android:textSize="30sp"
-        android:text="현재 화장실의 상태\n*남자화장실의 경우, 소변기의 상태는 제외"
+        android:text="현재 화장실의 상태\n*남자화장실의 경우,\n 소변기의 상태는 제외"
 
         android:layout_centerHorizontal="true" />
 
@@ -167,6 +168,7 @@
         android:layout_toStartOf="@+id/door"
         android:layout_marginRight="15dp"
         android:layout_marginEnd="15dp" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="0dp"

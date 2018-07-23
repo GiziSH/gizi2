@@ -49,7 +49,7 @@ public class fragment3_toiletstate extends Fragment {
         mTextViewResult = (TextView)v.findViewById(R.id.textView_main_result);
         List mArrayList = new ArrayList<>();
         fragment3_toiletstate.GetData task = new fragment3_toiletstate.GetData();
-        task.execute("http://192.168.0.7/gizitest.php");
+        task.execute("http://192.168.200.199/gizitest.php");
 
         return v;
     }

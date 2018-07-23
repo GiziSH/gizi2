@@ -1,5 +1,6 @@
 package com.suhyun.gizi2;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,8 +10,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.PopupMenu;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -19,7 +28,10 @@ import android.widget.PopupMenu;
 public class Fragment2 extends Fragment {
 
     Button mBtn;
-
+    private List<String> list_names;
+    private SharedPreferences pref;
+    private SharedPreferences.Editor editor;
+    private ListView rs_listview;
     public Fragment2() {
         // Required empty public constructor
     }
@@ -29,6 +41,18 @@ public class Fragment2 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_fragment2, container, false);
+
+        pref = getActivity().getSharedPreferences("pref",getActivity().MODE_PRIVATE);
+        editor = pref.edit();
+
+        rs_listview = (ListView) v.findViewById(R.id.recent_listview);
+
+        list_names = new ArrayList<>();
+        showLately();
+        ArrayAdapter<String> rsadapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_multiple_choice,list_names);
+        rs_listview.setAdapter(rsadapter);
+
+
 
         mBtn = (Button)v.findViewById(R.id.popup_menu);
         mBtn.setOnClickListener(new View.OnClickListener(){
@@ -64,6 +88,24 @@ public class Fragment2 extends Fragment {
             }
         });
         return v;
+    }
+    //내부메모리에서 불러오기
+    public void showLately(){
+        String json = pref.getString("lately", null);
+        if (json != null){
+            try{
+                JSONArray array = new JSONArray(json);
+                list_names.clear();
+
+                for(int i = array.length() - 1; i>=0;i--){
+                    String url = array.optString(i);
+                    list_names.add(url);
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

@@ -2,6 +2,7 @@ package com.suhyun.gizi2;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -62,6 +63,10 @@ public class Fragment3 extends Fragment  {
     private Spinner MySpinner1;         //검색 선택
     private EditText editSearch;
 
+    private List<String> list_names; //최근검색
+    private SharedPreferences pref;
+    private SharedPreferences.Editor editor;
+
     public Fragment3() {
         // Required empty public constructor
 
@@ -99,12 +104,12 @@ public class Fragment3 extends Fragment  {
                      case 1:
                          mArrayList.clear();
                          GetData task = new GetData();
-                         task.execute("http://192.168.0.7/subway_search.php");
+                         task.execute("http://192.168.200.199/subway_search.php");
                          break;
                      case 2:
                          mArrayList.clear();
                          GetData task2 = new GetData();
-                         task2.execute("http://192.168.0.7/restarea_search.php");
+                         task2.execute("http://192.168.200.199/restarea_search.php");
                          break;
                  }
              }
@@ -118,13 +123,22 @@ public class Fragment3 extends Fragment  {
 
         editSearch = (EditText) v.findViewById(R.id.editSearch);
 
+        pref = getActivity().getSharedPreferences("pref",getActivity().MODE_PRIVATE);
+        editor = pref.edit();
+        list_names = new ArrayList<>();
+        showLately();
 
 
         mlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(),mArrayList.get(position).get(TAG_name),Toast.LENGTH_SHORT).show();
+                String str1 = new String(mArrayList.get(position).get(TAG_name));
+                addLately(str1);
+                saveLately();
+
+                Toast.makeText(getActivity(),str1,Toast.LENGTH_SHORT).show();
+
                 fragment3_option op = new fragment3_option();
                 android.support.v4.app.FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.fragment_container, op);
@@ -158,6 +172,51 @@ public class Fragment3 extends Fragment  {
 
 
         return v;
+    }
+
+    //배열안에 집어넣기
+    public void addLately(String value) {
+
+        String str1 = new String();
+
+        for(int i =0; i<list_names.size(); i++){//중복검사
+            str1 = list_names.get(i);
+            if (str1.equals(value)){
+                list_names.remove(value);
+                list_names.add(value);
+                return;
+            }
+        }
+        list_names.add(value);
+    }
+    //내부메모리에 저장
+    public void saveLately(){
+        JSONArray array = new JSONArray();
+        for(int i=0; i<list_names.size();i++){
+            array.put(list_names.get(i));
+        }
+        String a = array.toString();
+
+        editor.putString("lately", a);
+        editor.commit();
+    }
+    //내부메모리에서 불러오기
+    public void showLately(){
+        String json = pref.getString("lately", null);
+        if (json != null){
+            try{
+                JSONArray array = new JSONArray(json);
+                list_names.clear();
+
+                for(int i = array.length() - 1; i>=0;i--){
+                    String url = array.optString(i);
+                    list_names.add(url);
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private class GetData extends AsyncTask<String, Void, String> {

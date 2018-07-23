@@ -14,14 +14,15 @@
             android:layout_marginTop="10dp"
             android:text="최근 검색 내역"
             android:textStyle="bold"/>
-        <Button
-            android:id="@+id/popup_menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:drawableLeft="@drawable/menu"
-            android:drawablePadding="5dp"
-            android:text="편집"/>
+
+    <Button
+        android:id="@+id/popup_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:drawableLeft="@drawable/menu"
+        android:drawablePadding="5dp"
+        android:text="메뉴"/>
         <View
             android:layout_marginTop="50dp"
             android:layout_width="match_parent"
@@ -32,13 +33,23 @@
     <LinearLayout
         android:layout_marginTop="50dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
         <ListView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/recent_listview"/>
-
     </LinearLayout>
+    <TextView
+        android:id="@+id/empty_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="최근 검색 결과가 없습니다."
+        android:textSize="15dp"
+        android:visibility="gone"
+        android:gravity="center"
+        />
+
 
 
 </FrameLayout>

@@ -138,15 +138,13 @@ public class Fragment3 extends Fragment  {
                 saveLately();
 
                 Toast.makeText(getActivity(),str1,Toast.LENGTH_SHORT).show();
-/*
+
                 fragment3_option op = new fragment3_option();
                 android.support.v4.app.FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.fragment_container, op);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
-*/
-                //Intent intent = new Intent(getActivity(),fragment3_option.class);
-                //startActivity(intent);
+
 
             }
         });

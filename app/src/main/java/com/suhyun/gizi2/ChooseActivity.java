@@ -30,7 +30,7 @@ public class ChooseActivity extends AppCompatActivity {
         manager.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {//버튼 눌렸을 때
-                Intent intent = new Intent(ChooseActivity.this, MainActivity.class);
+                Intent intent = new Intent(ChooseActivity.this, signin.class);
                 startActivity(intent);
             }
         });

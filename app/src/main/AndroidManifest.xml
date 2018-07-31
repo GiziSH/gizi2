@@ -23,7 +23,7 @@
         
         <activity android:name=".MainActivity"/>
         <activity android:name=".ChooseActivity"/>
-
+        <activity android:name=".signin"/>
     </application>
 
 </manifest>

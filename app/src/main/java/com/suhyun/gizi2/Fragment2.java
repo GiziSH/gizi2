@@ -11,6 +11,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -76,12 +78,15 @@ public class Fragment2 extends Fragment {
 
                 //메뉴 클릭했을 때 처리하는 부분
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener(){
+                    public int position;
+
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         switch(item.getItemId()){
                             case R.id.popup_select:
                                 ArrayAdapter<String> rsadapter2 = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_multiple_choice,list_names);
                                 rs_listview.setAdapter(rsadapter2);
+                                rs_listview.setItemsCanFocus(true);
                                 rs_listview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
                                 popup.dismiss();
                                 break;
@@ -122,6 +127,18 @@ public class Fragment2 extends Fragment {
             }
         });
 
+        rs_listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                fragment3_option op = new fragment3_option();
+                android.support.v4.app.FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.fragment_container, op);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+            }
+        });
         return v;
     }
     //내부메모리에 저장

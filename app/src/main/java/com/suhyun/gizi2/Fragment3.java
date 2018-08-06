@@ -1,11 +1,11 @@
 package com.suhyun.gizi2;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -14,12 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -30,7 +26,6 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -60,10 +55,17 @@ public class Fragment3 extends Fragment  {
     ListView mlistView;
     String mJsonString;
 
-    private Spinner MySpinner1;         //검색 선택
+    ToiletAdapter madapter = new ToiletAdapter();
+    private int[] img = {R.drawable.search};
+
+
+
+    //검색 선택
+    private Spinner MySpinner1;
     private EditText editSearch;
 
-    private List<String> list_names; //최근검색
+    //최근검색
+    private List<String> list_names;
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
 
@@ -85,7 +87,6 @@ public class Fragment3 extends Fragment  {
         //task.execute("http://192.168.0.7/searchtest.php");
 
 
-        CheckBox favorite = (CheckBox) v.findViewById(R.id.checkboxbookmark) ;
 
         // 지하철역,휴게소 선택
         String [] values1 = {"선택","지하철역","휴게소"};
@@ -126,7 +127,7 @@ public class Fragment3 extends Fragment  {
         pref = getActivity().getSharedPreferences("pref",getActivity().MODE_PRIVATE);
         editor = pref.edit();
         list_names = new ArrayList<>();
-        showLately();
+        showLately(); //전에 저장한 것 안지워지게 하기 위함
 
 
         mlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -164,6 +165,7 @@ public class Fragment3 extends Fragment  {
                 // input창에 문자를 입력할때마다 호출된다.
                 // search 메소드를 호출한다.
                 String text = editSearch.getText().toString();
+                //madapter.filter(text);
                 search(text);
             }
         });
@@ -308,14 +310,12 @@ public class Fragment3 extends Fragment  {
         }
     }
 
-
     private void showResult(){
 
+        ToiletAdapter madapter = new ToiletAdapter();
         try {
             JSONObject jsonObject = new JSONObject(mJsonString);
             JSONArray jsonArray = jsonObject.getJSONArray(TAG_JSON);
-            CheckBox favorite = (CheckBox) getView().findViewById(R.id.checkboxbookmark) ;
-
 
             for(int i=0;i<jsonArray.length();i++){
 
@@ -327,58 +327,22 @@ public class Fragment3 extends Fragment  {
                 String bookmark = item.getString(TAG_bookmark);
 
                 HashMap<String, String> hashMap = new HashMap<>();
-
-
                 hashMap.put(TAG_name, name);
                 hashMap.put(TAG_line, line);
                 hashMap.put(TAG_bookmark, bookmark);
-
-                //System.out.println();
                 mArrayList.add(hashMap);
 
-                /*if(bookmark.equals("1")){
+                madapter.addtoilet(ContextCompat.getDrawable(getContext(),img[0]),name,line);
 
-                    System.out.println(mArrayList.get(i));
-
-                }*/
             }
 
+
+            /*
             ListAdapter madapter = new SimpleAdapter(
                     getContext(), mArrayList, R.layout.row_listview,
                     new String[]{TAG_name,TAG_line},
                     new int[]{R.id.toiletname, R.id.toiletline}
-            )/*{
-
-                @Override
-                public View getView(int position, View convertView, ViewGroup parent) {
-
-                    View view = super.getView(position, convertView, parent);
-                    ImageView imgsearch = (ImageView) view.findViewById(R.id.imgsearch);
-                    TextView toiletname = (TextView) view.findViewById(R.id.toiletname);
-                    TextView toiletline = (TextView) view.findViewById(R.id.toiletline);
-                    CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkboxbookmark);
-
-                    checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                        @Override
-                        public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                            CheckBox checkBox = (CheckBox) compoundButton.findViewById(R.id.checkbox);
-                            if (checkBox.isChecked()) {
-                                checkBox.setChecked(b);
-                            }
-                        }
-                    });
-
-                    return view;
-                }
-            }*/
-            ;
-
-
-
-
-
-
-
+            );*/
 
             mlistView.setAdapter(madapter);
 
@@ -389,12 +353,14 @@ public class Fragment3 extends Fragment  {
 
     }
 
-
+    //화장실 검색하기
     public void search(String charText){
 
-        //Pattern p = Pattern.compile(".*"+charText+".*");
+
+        // 어댑터 없을 때 리스트 두개로 검색하기 방법
         Pattern p = Pattern.compile("^[a-zA-Z가-힣]*$");
         Matcher m = p.matcher(charText);
+
         mArrayList2.clear();
 
         if (charText.length() == 0) {
@@ -412,6 +378,7 @@ public class Fragment3 extends Fragment  {
                 }
             }
         }
+
 
         ListAdapter madapter = new SimpleAdapter(
                 getContext(), mArrayList2, R.layout.row_listview,

@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -55,8 +56,11 @@ public class Fragment3 extends Fragment  {
     ListView mlistView;
     String mJsonString;
 
-    ToiletAdapter madapter = new ToiletAdapter();
+    //즐겨찾기
+    private ArrayList<Toilet> toilets;
+    private ToiletAdapter madapter;
     private int[] img = {R.drawable.search};
+    private List<String> list_bookmark;
 
 
 
@@ -80,7 +84,13 @@ public class Fragment3 extends Fragment  {
         View v = inflater.inflate(R.layout.fragment_fragment3, container, false);
 
         mTextViewResult = (TextView)v.findViewById(R.id.textView_main_result);
+        //즐겨찾기
         mlistView = (ListView) v.findViewById(R.id.listView);
+        setListViewAdapter();
+        //setAdapterData();
+
+
+
         mArrayList = new ArrayList<>();
         mArrayList2 = new ArrayList<>();
         //GetData task = new GetData();
@@ -173,7 +183,63 @@ public class Fragment3 extends Fragment  {
 
         return v;
     }
+    private void setListViewAdapter(){
+        toilets = new ArrayList<Toilet>();
+        madapter = new ToiletAdapter(this.getActivity(), R.layout.row_listview, toilets);
+        mlistView.setAdapter(madapter);
+    }
 
+    //즐겨찾기
+    //배열안에 집어넣기
+    public void addbookmark(String value) {
+
+        String str1 = new String();
+
+
+        for(int i =0; i<list_bookmark.size(); i++){//중복검사
+            str1 = list_bookmark.get(i);
+            if (str1.equals(value)){
+                list_bookmark.remove(value);
+                list_bookmark.add(value);
+                return;
+            }
+        }
+
+        list_bookmark.add(value);
+    }
+    //내부메모리에 저장
+    public void savebookmark(){
+        JSONArray array = new JSONArray();
+        for(int i=0; i<list_bookmark.size();i++){
+            array.put(list_bookmark.get(i));
+        }
+        String a = array.toString();
+
+        editor.putString("bookmark", a);
+        editor.commit();
+    }
+    //내부메모리에서 불러오기
+    public void showbookmark(){
+        String json = pref.getString("bookmark", null);
+        if (json != null){
+            try{
+                JSONArray array = new JSONArray(json);
+                list_bookmark.clear();
+
+                for(int i = array.length() - 1; i>=0;i--){
+                    String url = array.optString(i);
+                    list_bookmark.add(url);
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
+    // 최근검색
     //배열안에 집어넣기
     public void addLately(String value) {
 
@@ -312,7 +378,7 @@ public class Fragment3 extends Fragment  {
 
     private void showResult(){
 
-        ToiletAdapter madapter = new ToiletAdapter();
+        //ToiletAdapter madapter = new ToiletAdapter();
         try {
             JSONObject jsonObject = new JSONObject(mJsonString);
             JSONArray jsonArray = jsonObject.getJSONArray(TAG_JSON);
@@ -390,6 +456,7 @@ public class Fragment3 extends Fragment  {
         mlistView.setAdapter(madapter);
 
     }
+
 
 
 

@@ -52,6 +52,12 @@ public class fragment3_toiletstate extends Fragment {
         mTextViewResult = (TextView)v.findViewById(R.id.textView_main_result);
         fragment3_toiletstate.GetData task = new fragment3_toiletstate.GetData();
         task.execute("http://192.168.200.199/gizitest.php");
+
+        final int allcnt = 0;
+        final int goodcnt = 0;
+
+
+        //팝업창 부분~
         final int[] selectedItem = {0};
 
         showDialog = (ImageView) v.findViewById(R.id.click);
@@ -66,17 +72,12 @@ public class fragment3_toiletstate extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int which) {
                                 selectedItem[0] = which;
-
                             }
                         })
 
                         .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                /*String selectedItem = "";
-                                for (String item : list) {
-                                    selectedItem += item + ", ";
-                                }*/
                                 Toast.makeText(getContext()
                                         , "응해주셔서 감사합니다."+items[selectedItem[0]]//만족or불만족으로 뜸
                                         , Toast.LENGTH_SHORT).show();
@@ -86,6 +87,8 @@ public class fragment3_toiletstate extends Fragment {
                                     fragmentTransaction.replace(R.id.fragment_container, f3_dis);
                                     fragmentTransaction.addToBackStack(null);
                                     fragmentTransaction.commit();
+                                } else {
+
                                 }
                             }
                         })
@@ -101,6 +104,7 @@ public class fragment3_toiletstate extends Fragment {
                 dialog.show();
             }
         });
+
 
 
 

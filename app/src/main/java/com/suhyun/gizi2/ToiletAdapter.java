@@ -25,6 +25,7 @@ import org.json.JSONException;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -77,7 +78,7 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
     @Override
     public long getItemId(int position)
     {
-        return 0;
+        return position;
     }
 
     @Override
@@ -99,11 +100,6 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
         }
 
         Toilet listViewItem = toilets.get(position);
-/*
-        ImageView image = (ImageView) convertView.findViewById(R.id.imgsearch);
-        TextView  name = (TextView) convertView.findViewById(R.id.toiletname);
-        TextView  line = (TextView) convertView.findViewById(R.id.toiletline);
-*/
 
         holder.image.setImageDrawable(listViewItem.getImg());
         holder.name.setText(listViewItem.getToiletname());
@@ -113,10 +109,13 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
         list_bookmark  = new ArrayList<>();
         showbookmark();
 
-        if (checkData){
-            holder.check.setChecked(checkData);
+        if (list_bookmark.size()!=0){
+            holder.check.setChecked(list_bookmark.contains(listViewItem.getToiletname()));
+            System.out.println(list_bookmark);
         }
-        //set event for checkbox
+
+
+
         holder.check.setOnCheckedChangeListener(onCheckedChangeListener(listViewItem));
 
 
@@ -137,6 +136,9 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
                         String str = new String(t.getToiletname());
                         addbookmark(str);
                         savebookmark();
+                        //System.out.println(getItemId(getPosition(t))); //출력값 6 =>금정역
+                        //System.out.println(getItem(getPosition(t))); //출력값 com.suhyun.gizi2.Toilet@af9f822
+
                         t.setSelected(true);
                     } else {
                         showbookmark();
@@ -150,6 +152,9 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
         }
 
 
+    public void toggle(){
+
+    }
     private class ViewHolder {
         private ImageView image;
         private TextView name;
@@ -202,13 +207,13 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
         }
         String a = array.toString();
 
-        editor1.putBoolean("cb_bookmark",holder.check.isChecked());
+        //editor1.putBoolean("cb_bookmark",holder.check.isChecked());
         editor1.putString("bookmark", a);
         editor1.commit();
     }
     //내부메모리에서 불러오기
     public void showbookmark(){
-        checkData = pref1.getBoolean("cb_bookmark",false);
+        //checkData = pref1.getBoolean("cb_bookmark",false);
         String json = pref1.getString("bookmark", null);
         if (json != null){
             try{
@@ -237,7 +242,6 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
         toilet.setToiletline(toiletline);
 
         toilets.add(toilet);
-        //System.out.println(toilets);
     }
 
 

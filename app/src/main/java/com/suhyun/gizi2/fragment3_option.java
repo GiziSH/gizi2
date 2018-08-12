@@ -8,12 +8,14 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 /**
  * Created by suhyun on 2018-07-08.
  */
 
 public class fragment3_option extends Fragment {
-    TextView textview;
+
 
 
     public fragment3_option() {
@@ -28,9 +30,9 @@ public class fragment3_option extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment3_option, container, false);
+        View v = inflater.inflate(R.layout.fragment3_option, container, false);
 
-        ImageButton girl = (ImageButton)view.findViewById(R.id.girl);
+        ImageButton girl = (ImageButton)v.findViewById(R.id.girl);
         girl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {//버튼 눌렸을 때
@@ -40,12 +42,13 @@ public class fragment3_option extends Fragment {
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
 
-                //Intent intent = new Intent(ChooseActivity.this, MainActivity.class);
-                //startActivity(intent);
             }
         });
 
-        return view;
+        TextView waiting = (TextView)v.findViewById(R.id.wait);
+
+
+        return v;
     }
 
 }

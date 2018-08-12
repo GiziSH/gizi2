@@ -7,6 +7,17 @@
     <!-- TODO: Update blank fragment layout -->
 
 
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="15dp"
+            android:textSize="30sp"
+            android:text="현재 화장실의 상태\n*남자화장실의 경우,\n 소변기의 상태는 제외"
+
+            android:layout_centerHorizontal="true" />
+
     <TextView
         android:id="@+id/center"
         android:layout_width="300sp"
@@ -96,78 +107,78 @@
 
 
 
-    <TextView
-        android:id="@+id/textView6"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_marginTop="15dp"
-        android:textSize="30sp"
-        android:text="현재 화장실의 상태\n*남자화장실의 경우,\n 소변기의 상태는 제외"
+        android:layout_marginTop="430dp"
+        android:layout_marginLeft="30dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="30sp"
+                android:layout_height="30sp"
+                app:srcCompat="@drawable/waiting" />
+            <TextView
+                android:id="@+id/textView7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="30sp"
+                android:text="예상 대기 인원 "
+                android:layout_marginLeft="20dp" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp">
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="30sp"
+                android:layout_height="30sp"
+                app:srcCompat="@drawable/smile" />
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="30sp"
+                android:text="화장실 만족지수"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="20dp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp">
+            <TextView
+                android:id="@+id/textView9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="30sp"
+                android:text="화장실 만족도 투표 go"
+                />
 
-        android:layout_centerHorizontal="true" />
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="30sp"
+                android:layout_height="30sp"
+                app:srcCompat="@drawable/click"
+                android:layout_marginLeft="20dp" />
+        </LinearLayout>
+    </RelativeLayout>
 
-    <TextView
-        android:id="@+id/textView7"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:text="예상 대기 인원 "
-        android:layout_marginBottom="13dp"
-        android:layout_above="@+id/textView8"
-        android:layout_alignRight="@+id/imageView3"
-        android:layout_alignEnd="@+id/imageView3"
-        android:layout_marginRight="12dp"
-        android:layout_marginEnd="12dp" />
 
-    <TextView
-        android:id="@+id/textView8"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:text="화장실 만족지수"
-        android:layout_above="@+id/textView9"
-        android:layout_alignRight="@+id/textView7"
-        android:layout_alignEnd="@+id/textView7"
-        android:layout_marginBottom="10dp" />
 
-    <TextView
-        android:id="@+id/textView9"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:text="화장실 만족도 투표 go"
-        android:layout_alignParentBottom="true"
-        />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="30sp"
-        android:layout_height="30sp"
-        app:srcCompat="@drawable/waiting"
-        android:layout_alignBottom="@+id/textView7"
-        android:layout_alignLeft="@+id/center"
-        android:layout_alignStart="@+id/center" />
 
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="30sp"
-        android:layout_height="30sp"
-        app:srcCompat="@drawable/smile"
-        android:layout_alignBottom="@+id/textView8"
-        android:layout_alignLeft="@+id/imageView"
-        android:layout_alignStart="@+id/imageView" />
 
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="30sp"
-        android:layout_height="30sp"
-        app:srcCompat="@drawable/click"
-        android:layout_below="@+id/textView8"
-        android:layout_toLeftOf="@+id/door"
-        android:layout_toStartOf="@+id/door"
-        android:layout_marginRight="15dp"
-        android:layout_marginEnd="15dp" />
+
+
+
+
+
+
+
 
     <TextView
         android:layout_width="match_parent"

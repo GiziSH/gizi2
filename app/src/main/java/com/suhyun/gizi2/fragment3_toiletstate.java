@@ -47,7 +47,6 @@ public class fragment3_toiletstate extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment3_toiletstate, container, false);
         mTextViewResult = (TextView)v.findViewById(R.id.textView_main_result);
-        List mArrayList = new ArrayList<>();
         fragment3_toiletstate.GetData task = new fragment3_toiletstate.GetData();
         task.execute("http://192.168.200.199/gizitest.php");
 

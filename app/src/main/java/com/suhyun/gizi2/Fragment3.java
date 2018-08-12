@@ -433,7 +433,7 @@ public class Fragment3 extends Fragment  {
             );*/
 
             mlistView.setAdapter(madapter);
-            //checkbookmark();
+            checkbookmark();
             //System.out.println("전체 이름 나와라"+);
         } catch (JSONException e) {
 
@@ -445,7 +445,6 @@ public class Fragment3 extends Fragment  {
     public void checkbookmark(){
         Toilet toilet = new Toilet();
         showbookmark();
-
         for (int i=0;i<madapter.getCount();i++){
             String str1 = new String(mArrayList.get(i).get(TAG_name));
             showbookmark();
@@ -453,7 +452,7 @@ public class Fragment3 extends Fragment  {
                 String str2 = new String(list_bookmark.get(j));
 
                 if (str1==str2){
-
+                    //madapter.
                     //toilet.setSelected(true);
 
                 } else {

@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static android.content.Context.MODE_PRIVATE;
+
 /**
  * Created by suhyun on 2018-08-06.
  */
@@ -40,9 +42,9 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
     private final String TAG = ToiletAdapter.class.getSimpleName();
 
     private List<String> list_bookmark;
-    private SharedPreferences pref;
-    private SharedPreferences.Editor editor;
-
+    private SharedPreferences pref1;
+    private SharedPreferences.Editor editor1;
+    private boolean checkData;
     //private ArrayList<Toilet> items = new ArrayList<Toilet>(); //모든 데이터 arraylist
 
 
@@ -59,17 +61,17 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
 
 
 
-/* items는 모두 toilets으로 바꿔야함
+
     @Override
     public int getCount()
     {
-        return items.size();
+        return toilets.size();
     }
 
     @Override
-    public Object getItem(int position)
+    public Toilet getItem(int position)
     {
-        return items.get(position);
+        return toilets.get(position);
     }
 
     @Override
@@ -77,7 +79,7 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
     {
         return 0;
     }
-*/
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {
@@ -97,20 +99,26 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
         }
 
         Toilet listViewItem = toilets.get(position);
-
+/*
         ImageView image = (ImageView) convertView.findViewById(R.id.imgsearch);
         TextView  name = (TextView) convertView.findViewById(R.id.toiletname);
         TextView  line = (TextView) convertView.findViewById(R.id.toiletline);
-
+*/
 
         holder.image.setImageDrawable(listViewItem.getImg());
         holder.name.setText(listViewItem.getToiletname());
         holder.line.setText(listViewItem.getToiletline());
+        pref1 = getContext().getSharedPreferences("pref1",MODE_PRIVATE);
+        editor1 = pref1.edit();
+        list_bookmark  = new ArrayList<>();
+        showbookmark();
 
-        //Fragment3 fragment3 = new Fragment3();
+        if (checkData){
+            holder.check.setChecked(checkData);
+        }
         //set event for checkbox
         holder.check.setOnCheckedChangeListener(onCheckedChangeListener(listViewItem));
-        //showbookmark();
+
 
         return convertView;
     }
@@ -122,18 +130,25 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
+                        pref1 = getContext().getSharedPreferences("pref1",MODE_PRIVATE);
+                        editor1 = pref1.edit();
+                        list_bookmark  = new ArrayList<>();
+                        showbookmark();
                         String str = new String(t.getToiletname());
                         addbookmark(str);
-                        //savebookmark();
-                        System.out.println("체크됨");
+                        savebookmark();
                         t.setSelected(true);
                     } else {
-                        System.out.println("체크풀림");
+                        showbookmark();
+                        String str = new String(t.getToiletname());
+                        deletebookmark(str);
+                        savebookmark();
                         t.setSelected(false);
                     }
                 }
             };
         }
+
 
     private class ViewHolder {
         private ImageView image;
@@ -148,6 +163,7 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
             check = (CheckBox) v.findViewById(R.id.checkboxbookmark);
         }
     }
+
     //즐겨찾기
     //배열안에 집어넣기
     public void addbookmark(String value) {
@@ -164,20 +180,36 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
         }
         list_bookmark.add(value);
     }
+    //배열에서 제거
+    public void deletebookmark(String value) {
+
+        String str1 = new String();
+
+        for(int i =0; i<list_bookmark.size(); i++){//중복검사
+            str1 = list_bookmark.get(i);
+            if (str1.equals(value)){
+                list_bookmark.remove(value);
+                return;
+            }
+        }
+    }
     //내부메모리에 저장
     public void savebookmark(){
+        ViewHolder holder = null;
         JSONArray array = new JSONArray();
         for(int i=0; i<list_bookmark.size();i++){
             array.put(list_bookmark.get(i));
         }
         String a = array.toString();
 
-        editor.putString("bookmark", a);
-        editor.commit();
+        editor1.putBoolean("cb_bookmark",holder.check.isChecked());
+        editor1.putString("bookmark", a);
+        editor1.commit();
     }
     //내부메모리에서 불러오기
     public void showbookmark(){
-        String json = pref.getString("bookmark", null);
+        checkData = pref1.getBoolean("cb_bookmark",false);
+        String json = pref1.getString("bookmark", null);
         if (json != null){
             try{
                 JSONArray array = new JSONArray(json);
@@ -196,7 +228,7 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
 
 
 
-    //데이터 넣기
+    //각 화장실 데이터 넣기
     public void addtoilet(Drawable icon, String toiletname, String toiletline){
         Toilet toilet = new Toilet();
 
@@ -205,8 +237,10 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
         toilet.setToiletline(toiletline);
 
         toilets.add(toilet);
-        System.out.println(toilets);
+        //System.out.println(toilets);
     }
+
+
 
 /*
     public void filter(String charText) {

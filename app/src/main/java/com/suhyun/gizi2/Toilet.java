@@ -83,4 +83,6 @@ public class Toilet implements Parcelable {
         this.isSelected = isSelected;
     }
 
+
+
 }

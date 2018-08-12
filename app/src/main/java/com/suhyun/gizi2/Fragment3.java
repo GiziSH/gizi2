@@ -39,6 +39,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static android.content.Context.MODE_PRIVATE;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -61,6 +63,8 @@ public class Fragment3 extends Fragment  {
     private ToiletAdapter madapter;
     private int[] img = {R.drawable.search};
     private List<String> list_bookmark;
+    private SharedPreferences pref1;
+    private SharedPreferences.Editor editor1;
 
 
 
@@ -88,7 +92,11 @@ public class Fragment3 extends Fragment  {
         mlistView = (ListView) v.findViewById(R.id.listView);
         setListViewAdapter();
         //setAdapterData();
-
+        pref1 = getContext().getSharedPreferences("pref1",MODE_PRIVATE);
+        editor1 = pref1.edit();
+        list_bookmark  = new ArrayList<>();
+        //madapter.checkbookmark();
+        Toilet toilet = new Toilet();
 
 
         mArrayList = new ArrayList<>();
@@ -195,7 +203,6 @@ public class Fragment3 extends Fragment  {
 
         String str1 = new String();
 
-
         for(int i =0; i<list_bookmark.size(); i++){//중복검사
             str1 = list_bookmark.get(i);
             if (str1.equals(value)){
@@ -204,8 +211,20 @@ public class Fragment3 extends Fragment  {
                 return;
             }
         }
-
         list_bookmark.add(value);
+    }
+    //배열에서 제거
+    public void deletebookmark(String value) {
+
+        String str1 = new String();
+
+        for(int i =0; i<list_bookmark.size(); i++){//중복검사
+            str1 = list_bookmark.get(i);
+            if (str1.equals(value)){
+                list_bookmark.remove(value);
+                return;
+            }
+        }
     }
     //내부메모리에 저장
     public void savebookmark(){
@@ -215,12 +234,12 @@ public class Fragment3 extends Fragment  {
         }
         String a = array.toString();
 
-        editor.putString("bookmark", a);
-        editor.commit();
+        editor1.putString("bookmark", a);
+        editor1.commit();
     }
     //내부메모리에서 불러오기
     public void showbookmark(){
-        String json = pref.getString("bookmark", null);
+        String json = pref1.getString("bookmark", null);
         if (json != null){
             try{
                 JSONArray array = new JSONArray(json);
@@ -236,6 +255,7 @@ public class Fragment3 extends Fragment  {
             }
         }
     }
+
 
 
 
@@ -398,6 +418,8 @@ public class Fragment3 extends Fragment  {
                 hashMap.put(TAG_bookmark, bookmark);
                 mArrayList.add(hashMap);
 
+                //System.out.println(bookmark);
+
                 madapter.addtoilet(ContextCompat.getDrawable(getContext(),img[0]),name,line);
 
             }
@@ -411,13 +433,39 @@ public class Fragment3 extends Fragment  {
             );*/
 
             mlistView.setAdapter(madapter);
-
+            //checkbookmark();
+            //System.out.println("전체 이름 나와라"+);
         } catch (JSONException e) {
 
             Log.d(TAG, "showResult : ", e);
         }
 
     }
+
+    public void checkbookmark(){
+        Toilet toilet = new Toilet();
+        showbookmark();
+
+        for (int i=0;i<madapter.getCount();i++){
+            String str1 = new String(mArrayList.get(i).get(TAG_name));
+            showbookmark();
+            for (int j=0;j<list_bookmark.size();j++){
+                String str2 = new String(list_bookmark.get(j));
+
+                if (str1==str2){
+
+                    //toilet.setSelected(true);
+
+                } else {
+                    //toilet.setSelected(false);
+                }
+            }
+
+
+        }
+
+    }
+
 
     //화장실 검색하기
     public void search(String charText){

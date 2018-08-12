@@ -40,8 +40,8 @@ public class Fragment1 extends Fragment {
     private ArrayList<Toilet> checkedList;
 
     private List<String> list_bookmark;
-    private SharedPreferences pref;
-    private SharedPreferences.Editor editor;
+    private SharedPreferences pref1;
+    private SharedPreferences.Editor editor1;
     private ListView bm_listview;
 
     public Fragment1() {
@@ -54,8 +54,8 @@ public class Fragment1 extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_fragment1, container, false);
 
-        pref = getActivity().getSharedPreferences("pref",getActivity().MODE_PRIVATE);
-        editor = pref.edit();
+        pref1 = getActivity().getSharedPreferences("pref1",getActivity().MODE_PRIVATE);
+        editor1 = pref1.edit();
 
         bm_listview = (ListView) v.findViewById(R.id.bookmark_listview);
         TextView tx = (TextView)v.findViewById(R.id.empty2_text);
@@ -103,10 +103,10 @@ public class Fragment1 extends Fragment {
             }
         });
 
-        container = (LinearLayout) v.findViewById(R.id.linearLayout);
-        checkedList = new ArrayList<Toilet>(); //initializing list
+        //container = (LinearLayout) v.findViewById(R.id.linearLayout);
+        //checkedList = new ArrayList<Toilet>(); //initializing list
         //getDataFromIntent(); // 데이터받기 F3에서 보낸
-        generateDataToContainerLayout();
+        //generateDataToContainerLayout();
 
         return v;
     }
@@ -151,7 +151,7 @@ public class Fragment1 extends Fragment {
     }
     //내부메모리에서 불러오기
     public void showbookmark(){
-        String json = pref.getString("bookmark", null);
+        String json = pref1.getString("bookmark", null);
         if (json != null){
             try{
                 JSONArray array = new JSONArray(json);

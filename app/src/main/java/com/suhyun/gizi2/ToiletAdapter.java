@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -46,10 +47,9 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
     private SharedPreferences pref1;
     private SharedPreferences.Editor editor1;
     private boolean checkData;
-    //private ArrayList<Toilet> items = new ArrayList<Toilet>(); //모든 데이터 arraylist
 
-
-    private List<Toilet> newitems = null;
+    private ArrayList<Toilet> newitems;
+    private ArrayList<Toilet> temp;
 
 
 
@@ -57,11 +57,8 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
         super(activity, resource, toilets);
         this.activity = activity;
         this.toilets = toilets;
-        Log.i(TAG, "init adapter");
+        //this.newitems = new ArrayList<Toilet>();
     }
-
-
-
 
     @Override
     public int getCount()
@@ -152,9 +149,6 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
         }
 
 
-    public void toggle(){
-
-    }
     private class ViewHolder {
         private ImageView image;
         private TextView name;
@@ -246,33 +240,38 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
 
 
 
-/*
+
     public void filter(String charText) {
         //Pattern p = Pattern.compile("^[a-zA-Z가-힣]*$");
         //Matcher m = p.matcher(charText);
-
+        //Toilet to = new Toilet();
+        newitems = new ArrayList<>();
         newitems.clear();
 
+
         if (charText.length() == 0) {
-            newitems.addAll(items);
+            newitems.addAll(toilets);
+
         }
         else {
-            for(Toilet to : items){
-                if (to.getToiletname().toLowerCase().contains(charText)){
-                    newitems.add(to);
-                }
-            }/*
-            for (int i=0; i<items.size();i++){
-                String str = items.get(i).getToiletname();
+            /*
+            for(Toilet to : toilets ) {
+                if (to.getToiletname().toLowerCase(Locale.getDefault()).contains(charText));
+                newitems.add(to);
+            }*/
 
-                if (str.toLowerCase().contains(charText)) {
-
-                    newitems.add(items.get(i));
+            for (int i=0;i<toilets.size();i++){
+                if (toilets.get(i).getToiletname().toLowerCase().contains(charText)){
+                    //System.out.println(toilets.get(i));
+                    newitems.add(toilets.get(i));
                 }
-            }///
+            }
         }
+
+        this.toilets = newitems;
         notifyDataSetChanged();
-    }*/
+
+    }
 
 
 }

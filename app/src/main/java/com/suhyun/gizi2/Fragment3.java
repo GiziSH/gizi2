@@ -183,8 +183,8 @@ public class Fragment3 extends Fragment  {
                 // input창에 문자를 입력할때마다 호출된다.
                 // search 메소드를 호출한다.
                 String text = editSearch.getText().toString();
-                //madapter.filter(text);
-                search(text);
+                madapter.filter(text);
+                //search(text);
             }
         });
 
@@ -433,7 +433,7 @@ public class Fragment3 extends Fragment  {
             );*/
 
             mlistView.setAdapter(madapter);
-            checkbookmark();
+            //checkbookmark();
             //System.out.println("전체 이름 나와라"+);
         } catch (JSONException e) {
 

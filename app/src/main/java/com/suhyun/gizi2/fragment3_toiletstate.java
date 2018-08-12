@@ -1,6 +1,8 @@
 package com.suhyun.gizi2;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -9,7 +11,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,7 +43,8 @@ public class fragment3_toiletstate extends Fragment {
     private TextView mTextViewResult;
     String mJsonString;
 
-
+    //팝업창
+    private ImageView showDialog;
 
 
     @Override
@@ -49,6 +55,59 @@ public class fragment3_toiletstate extends Fragment {
         mTextViewResult = (TextView)v.findViewById(R.id.textView_main_result);
         fragment3_toiletstate.GetData task = new fragment3_toiletstate.GetData();
         task.execute("http://192.168.200.199/gizitest.php");
+        final List<String> list = new ArrayList<String>();
+
+        showDialog = (ImageView) v.findViewById(R.id.click);
+        showDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String[] items = new String[]{"변기가 막힘", "너무 지저분함", "휴지가 없음", "기타"};
+                AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
+                dialog
+                        .setTitle("불만인 이유를 골라주세요.")
+                        .setMultiChoiceItems(
+                                items
+                                , new boolean[]{false, false, false, false}
+                                , new DialogInterface.OnMultiChoiceClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                                        if(isChecked) {
+                                            Toast.makeText(getContext()
+                                                    ,items[which]
+                                                    ,Toast.LENGTH_SHORT).show();
+                                            list.add(items[which]);
+                                        } else {
+                                            list.remove(items[which]);
+                                        }
+                                    }
+                                }
+                        )
+                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                String selectedItem = "";
+                                for (String item : list) {
+                                    selectedItem += item + ", ";
+                                }
+                                Toast.makeText(getContext()
+                                        , selectedItem
+                                        , Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .setNeutralButton("취소", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(getContext()
+                                        , "취소 버튼을 눌렀습니다."
+                                        , Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                dialog.create();
+                dialog.show();
+            }
+        });
+
+
 
         return v;
     }

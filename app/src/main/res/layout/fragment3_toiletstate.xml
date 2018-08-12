@@ -159,9 +159,9 @@
                 />
 
             <ImageView
-                android:id="@+id/imageView3"
-                android:layout_width="30sp"
-                android:layout_height="30sp"
+                android:id="@+id/click"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 app:srcCompat="@drawable/click"
                 android:layout_marginLeft="20dp" />
         </LinearLayout>

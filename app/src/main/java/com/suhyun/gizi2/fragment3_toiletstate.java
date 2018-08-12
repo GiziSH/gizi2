@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,9 +24,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by suhyun on 2018-07-08.
@@ -55,43 +52,41 @@ public class fragment3_toiletstate extends Fragment {
         mTextViewResult = (TextView)v.findViewById(R.id.textView_main_result);
         fragment3_toiletstate.GetData task = new fragment3_toiletstate.GetData();
         task.execute("http://192.168.200.199/gizitest.php");
-        final List<String> list = new ArrayList<String>();
+        final int[] selectedItem = {0};
 
         showDialog = (ImageView) v.findViewById(R.id.click);
         showDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String[] items = new String[]{"변기가 막힘", "너무 지저분함", "휴지가 없음", "기타"};
+                final String[] items = new String[]{"만족", "불만족"};
                 AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
                 dialog
-                        .setTitle("불만인 이유를 골라주세요.")
-                        .setMultiChoiceItems(
-                                items
-                                , new boolean[]{false, false, false, false}
-                                , new DialogInterface.OnMultiChoiceClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                                        if(isChecked) {
-                                            Toast.makeText(getContext()
-                                                    ,items[which]
-                                                    ,Toast.LENGTH_SHORT).show();
-                                            list.add(items[which]);
-                                        } else {
-                                            list.remove(items[which]);
-                                        }
-                                    }
-                                }
-                        )
+                        .setTitle("화장실 사용 만족하셨나요?")
+                        .setSingleChoiceItems(items, 0, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int which) {
+                                selectedItem[0] = which;
+
+                            }
+                        })
+
                         .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                String selectedItem = "";
+                                /*String selectedItem = "";
                                 for (String item : list) {
                                     selectedItem += item + ", ";
-                                }
+                                }*/
                                 Toast.makeText(getContext()
-                                        , selectedItem
+                                        , "응해주셔서 감사합니다."+items[selectedItem[0]]//만족or불만족으로 뜸
                                         , Toast.LENGTH_SHORT).show();
+                                if (items[selectedItem[0]]=="불만족"){
+                                    F3_dissatisfaction f3_dis = new F3_dissatisfaction();
+                                    android.support.v4.app.FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                                    fragmentTransaction.replace(R.id.fragment_container, f3_dis);
+                                    fragmentTransaction.addToBackStack(null);
+                                    fragmentTransaction.commit();
+                                }
                             }
                         })
                         .setNeutralButton("취소", new DialogInterface.OnClickListener() {

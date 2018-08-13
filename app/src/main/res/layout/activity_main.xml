@@ -57,9 +57,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:drawableTop="@drawable/setting"
+            android:drawableTop="@drawable/man"
             android:padding="5dp"
-            android:text="설정"/>
+            android:text="관리자"/>
 
     </LinearLayout>
     <View

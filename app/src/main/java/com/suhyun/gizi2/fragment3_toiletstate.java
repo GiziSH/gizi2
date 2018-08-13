@@ -53,8 +53,6 @@ public class fragment3_toiletstate extends Fragment {
         fragment3_toiletstate.GetData task = new fragment3_toiletstate.GetData();
         task.execute("http://192.168.200.199/gizitest.php");
 
-        final int allcnt = 0;
-        final int goodcnt = 0;
 
 
         //팝업창 부분~

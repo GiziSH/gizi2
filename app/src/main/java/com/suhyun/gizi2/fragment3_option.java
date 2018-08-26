@@ -40,6 +40,7 @@ public class fragment3_option extends Fragment {
     private String t_SR; //subway인지 restarea인지
     private String Tnames; //어느 화장실인가
     private TextView text_sati;
+    String res_sati;
 
     public fragment3_option() {
         // Required empty public constructor
@@ -78,7 +79,7 @@ public class fragment3_option extends Fragment {
             public void onClick(View v) {//버튼 눌렸을 때
                 fragment3_toiletstate ts = new fragment3_toiletstate();
                 android.support.v4.app.FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.fragment_container, ts);
+                fragmentTransaction.replace(R.id.fragment_container, fragment3_toiletstate.Tname(Tnames));
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
 
@@ -242,7 +243,9 @@ public class fragment3_option extends Fragment {
                 JSONObject item = jsonArray.getJSONObject(i);
 
                 String $result = item.getString(TAG_sati);
-                text_sati.setText($result+"%");
+
+                String res_sati = new String($result+"%");
+                text_sati.setText(res_sati);
             }
 
 

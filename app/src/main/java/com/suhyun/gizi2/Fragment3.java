@@ -175,7 +175,6 @@ public class Fragment3 extends Fragment  {
 
                 Toast.makeText(getActivity(),str1,Toast.LENGTH_SHORT).show();
 
-
                 fragment3_option op = new fragment3_option();
                 android.support.v4.app.FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.fragment_container, fragment3_option.Tname(str1));

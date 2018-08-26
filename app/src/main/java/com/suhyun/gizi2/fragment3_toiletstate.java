@@ -20,9 +20,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 
@@ -39,10 +42,27 @@ public class fragment3_toiletstate extends Fragment {
     private static final String TAG_state = "state";
     private TextView mTextViewResult;
     String mJsonString;
+    private TextView text_sati;
+    private String Tnames; //어느 화장실인가
+    String res_sati; //넘겨받은 만족지수
+    private static final String TAG_sati = "$result";
 
     //팝업창
     private ImageView showDialog;
 
+    public static fragment3_toiletstate Tname(String str){
+        fragment3_toiletstate fragment = new fragment3_toiletstate();
+        Bundle args = new Bundle();
+        args.putString("Tname", str);
+        fragment.setArguments(args);
+        return fragment;
+    }
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null){
+            Tnames = getArguments().getString("Tname");
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -77,16 +97,19 @@ public class fragment3_toiletstate extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Toast.makeText(getContext()
-                                        , "응해주셔서 감사합니다."+items[selectedItem[0]]//만족or불만족으로 뜸
+                                        , "응해주셔서 감사합니다."
                                         , Toast.LENGTH_SHORT).show();
+                                updatecntDB cntDB = new updatecntDB();
+                                cntDB.execute("http://192.168.200.199/update_allcnt.php");
                                 if (items[selectedItem[0]]=="불만족"){
                                     F3_dissatisfaction f3_dis = new F3_dissatisfaction();
                                     android.support.v4.app.FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                                     fragmentTransaction.replace(R.id.fragment_container, f3_dis);
                                     fragmentTransaction.addToBackStack(null);
                                     fragmentTransaction.commit();
-                                } else {
-
+                                } else { //만족일 경우
+                                    updatecntDB goodcntDB = new updatecntDB();
+                                    goodcntDB.execute("http://192.168.200.199/update_goodcnt.php");
                                 }
                             }
                         })
@@ -102,8 +125,10 @@ public class fragment3_toiletstate extends Fragment {
                 dialog.show();
             }
         });
+        satiDB satisati = new satiDB();
+        satisati.execute("http://192.168.200.199/select_sati.php");
 
-
+        text_sati = (TextView)v.findViewById(R.id.sati); //만족도
 
 
         return v;
@@ -197,7 +222,7 @@ public class fragment3_toiletstate extends Fragment {
             }
 
         }
-    }
+    } //화장실 상태
 
     private void showResult(){
         try {
@@ -226,7 +251,7 @@ public class fragment3_toiletstate extends Fragment {
             Log.d(TAG, "showResult : ", e);
         }
 
-    }
+    }//화장실 상태 확인
 
     private void colortextview(String str, View view){
         HashMap<String, Integer> hashMap = new HashMap<>();
@@ -240,6 +265,167 @@ public class fragment3_toiletstate extends Fragment {
 
         view.findViewById(hashMap.get(str)).setBackgroundColor(Color.rgb(255, 0, 0));
         ((TextView)view.findViewById(hashMap.get(str))).setText("사용");
-    }
+    } //상태별로 색칠하기
 
+    private class satiDB extends AsyncTask<String, Void, String> {
+        ProgressDialog progressDialog;
+        String data = "";
+        String errorString = null;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressDialog = ProgressDialog.show(getContext(),
+                    "Please Wait", null, true, true);
+        }
+
+
+        @Override
+        protected void onPostExecute(String data) {
+            super.onPostExecute(data);
+            progressDialog.dismiss();
+            Log.d(TAG, "response  - " + data);
+
+            if (data == null){
+
+            }
+            else {
+
+                mJsonString = data;
+                showsati();
+
+            }
+        }
+        @Override
+        protected String doInBackground(String... params) {
+
+            /* 인풋 파라메터값 생성 */
+            String param = "t_name=" + Tnames +  "";
+            Log.e("POST",param);
+            String serverURL = params[0];
+            try {
+                /* 서버연결 */
+                URL url = new URL(serverURL);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.connect();
+
+                /* 안드로이드 -> 서버 파라메터값 전달 */
+                OutputStream outs = conn.getOutputStream();
+                outs.write(param.getBytes("UTF-8"));
+                outs.flush();
+                outs.close();
+
+                /* 서버 -> 안드로이드 파라메터값 전달 */
+                InputStream is = null;
+                BufferedReader in = null;
+                is = conn.getInputStream();
+                in = new BufferedReader(new InputStreamReader(is), 8 * 1024);
+                String line = null;
+                StringBuffer buff = new StringBuffer();
+                while ( ( line = in.readLine() ) != null )
+                {
+                    buff.append(line + "\n");
+                }
+                data = buff.toString().trim();
+
+                /* 서버에서 응답 */
+                Log.e("RECV DATA",data);
+
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return data;
+        }
+
+
+    } //만족도 불러오기 DB
+
+    private void showsati(){
+        try {
+            JSONObject jsonObject = new JSONObject(mJsonString);
+            JSONArray jsonArray = jsonObject.getJSONArray(TAG_JSON);
+
+            for(int i=0;i<jsonArray.length();i++){
+
+                JSONObject item = jsonArray.getJSONObject(i);
+
+                String $result = item.getString(TAG_sati);
+
+                String res_sati = new String($result+"%");
+                text_sati.setText(res_sati);
+            }
+
+
+        } catch (JSONException e) {
+
+            Log.d(TAG, "showResult : ", e);
+        }
+
+    }//만족도 보여주기
+
+    public class updatecntDB extends AsyncTask<String, Integer, String> {
+        String data = "";
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            /* 인풋 파라메터값 생성 */
+            String param = "t_name=" + Tnames + "";
+            Log.e("POST", param);
+            String serverURL = params[0];
+            try {
+                /* 서버연결 */
+                URL url = new URL(serverURL);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.connect();
+
+                /* 안드로이드 -> 서버 파라메터값 전달 */
+                OutputStream outs = conn.getOutputStream();
+                outs.write(param.getBytes("UTF-8"));
+                outs.flush();
+                outs.close();
+
+                /* 서버 -> 안드로이드 파라메터값 전달 */
+                InputStream is = null;
+                BufferedReader in = null;
+
+
+                is = conn.getInputStream();
+                in = new BufferedReader(new InputStreamReader(is), 8 * 1024);
+                String line = null;
+                StringBuffer buff = new StringBuffer();
+                while ((line = in.readLine()) != null) {
+                    buff.append(line + "\n");
+                }
+                data = buff.toString().trim();
+                Log.e("만족도 all", data);
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return data;
+        }
+
+        @Override
+        protected void onPostExecute(String data) {
+            super.onPostExecute(data);
+            /* 서버에서 응답 */
+            Log.e("만족도 all", data);
+
+        }
+    }
 }

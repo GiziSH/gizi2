@@ -199,8 +199,6 @@ public class fragment3_toiletstate extends Fragment {
         }
     }
 
-
-
     private void showResult(){
         try {
             JSONObject jsonObject = new JSONObject(mJsonString);
@@ -229,8 +227,6 @@ public class fragment3_toiletstate extends Fragment {
         }
 
     }
-
-
 
     private void colortextview(String str, View view){
         HashMap<String, Integer> hashMap = new HashMap<>();

@@ -29,9 +29,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,6 +80,7 @@ public class Fragment3 extends Fragment  {
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
 
+    String SRname;
     public Fragment3() {
         // Required empty public constructor
 
@@ -118,17 +122,30 @@ public class Fragment3 extends Fragment  {
              public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                  switch (position){
                      case 0:
-                         mArrayList.clear();
+
+                         madapter.deletetoilet();
+                         mlistView.setAdapter(madapter);
                          break;
                      case 1:
-                         mArrayList.clear();
+
+                         madapter.deletetoilet();
+
+                         //task.execute("http://192.168.200.199/subway_search.php");
+                         SRname = "subway";
                          GetData task = new GetData();
-                         task.execute("http://192.168.200.199/subway_search.php");
+                         task.execute("http://192.168.200.199/select_toilet.php");
+                         fragment3_option.SRname(SRname);
+
                          break;
                      case 2:
-                         mArrayList.clear();
+
+                         madapter.deletetoilet();
+
+                         //task2.execute("http://192.168.200.199/restarea_search.php");
+                         SRname = "restarea";
                          GetData task2 = new GetData();
-                         task2.execute("http://192.168.200.199/restarea_search.php");
+                         task2.execute("http://192.168.200.199/select_toilet.php");
+                         fragment3_option.SRname(SRname);
                          break;
                  }
              }
@@ -158,9 +175,10 @@ public class Fragment3 extends Fragment  {
 
                 Toast.makeText(getActivity(),str1,Toast.LENGTH_SHORT).show();
 
+
                 fragment3_option op = new fragment3_option();
                 android.support.v4.app.FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.fragment_container, op);
+                fragmentTransaction.replace(R.id.fragment_container, fragment3_option.Tname(str1));
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
 
@@ -308,6 +326,7 @@ public class Fragment3 extends Fragment  {
     private class GetData extends AsyncTask<String, Void, String> {
         ProgressDialog progressDialog;
         String errorString = null;
+        String data = "";
 
         @Override
         protected void onPreExecute() {
@@ -319,26 +338,71 @@ public class Fragment3 extends Fragment  {
 
 
         @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
+        protected void onPostExecute(String data) {
+            super.onPostExecute(data);
             progressDialog.dismiss();
-            mTextViewResult.setText(result);
-            Log.d(TAG, "response  - " + result);
+            mTextViewResult.setText(data);
+            Log.d(TAG, "response  - " + data);
 
-            if (result == null){
+            if (data == null){
 
                 mTextViewResult.setText(errorString);
             }
             else {
 
-                mJsonString = result;
+                mJsonString = data;
                 showResult();
 
             }
         }
+        @Override
+        protected String doInBackground(String... params) {
+
+            /* 인풋 파라메터값 생성 */
+            String param = "t_SR=" + SRname +  "";
+            Log.e("POST",param);
+            String serverURL = params[0];
+            try {
+                /* 서버연결 */
+                URL url = new URL(serverURL);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.connect();
+
+                /* 안드로이드 -> 서버 파라메터값 전달 */
+                OutputStream outs = conn.getOutputStream();
+                outs.write(param.getBytes("UTF-8"));
+                outs.flush();
+                outs.close();
+
+                /* 서버 -> 안드로이드 파라메터값 전달 */
+                InputStream is = null;
+                BufferedReader in = null;
+                is = conn.getInputStream();
+                in = new BufferedReader(new InputStreamReader(is), 8 * 1024);
+                String line = null;
+                StringBuffer buff = new StringBuffer();
+                while ( ( line = in.readLine() ) != null )
+                {
+                    buff.append(line + "\n");
+                }
+                data = buff.toString().trim();
+
+                /* 서버에서 응답 */
+                Log.e("RECV DATA",data);
 
 
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return data;
+        }
+        /*
         @Override
         protected String doInBackground(String... params) {
 
@@ -354,6 +418,7 @@ public class Fragment3 extends Fragment  {
                 httpURLConnection.setReadTimeout(5000);
                 httpURLConnection.setConnectTimeout(5000);
                 httpURLConnection.connect();
+
 
 
                 int responseStatusCode = httpURLConnection.getResponseCode();
@@ -394,11 +459,11 @@ public class Fragment3 extends Fragment  {
             }
 
         }
+        */
     }
 
     private void showResult(){
 
-        //ToiletAdapter madapter = new ToiletAdapter();
         try {
             JSONObject jsonObject = new JSONObject(mJsonString);
             JSONArray jsonArray = jsonObject.getJSONArray(TAG_JSON);
@@ -410,12 +475,12 @@ public class Fragment3 extends Fragment  {
 
                 String name = item.getString(TAG_name);
                 String line = item.getString(TAG_line);
-                String bookmark = item.getString(TAG_bookmark);
+                //String bookmark = item.getString(TAG_bookmark);
 
                 HashMap<String, String> hashMap = new HashMap<>();
                 hashMap.put(TAG_name, name);
                 hashMap.put(TAG_line, line);
-                hashMap.put(TAG_bookmark, bookmark);
+                //hashMap.put(TAG_bookmark, bookmark);
                 mArrayList.add(hashMap);
 
                 //System.out.println(bookmark);

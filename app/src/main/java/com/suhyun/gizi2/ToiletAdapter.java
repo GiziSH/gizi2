@@ -237,6 +237,11 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
 
         toilets.add(toilet);
     }
+    //각 화장실 데이터 지우기
+    public void deletetoilet(){
+        toilets.clear();
+    }
+
 
 
 

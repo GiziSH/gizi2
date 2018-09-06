@@ -2,11 +2,14 @@ package com.suhyun.gizi2;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,30 +22,46 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupMenu;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class Fragment1 extends Fragment {
+    private static String TAG = "phptest_MainActivity";
+    private static final String TAG_JSON = "webnautes";
+    private static final String TAG_name = "name";
+    private static final String TAG_line = "line";
+    private static final String TAG_bookmark = "bookmark";
+    String mJsonString;
+    ArrayList<HashMap<String, String>> mArrayList;
 
     Button mBtn; //편집버튼
-
-    private LinearLayout container;
-    private ArrayList<Toilet> checkedList;
 
     private List<String> list_bookmark;
     private SharedPreferences pref1;
     private SharedPreferences.Editor editor1;
-    private ListView bm_listview;
+    ListView bm_listview;
 
     public Fragment1() {
         // Required empty public constructor
@@ -54,27 +73,21 @@ public class Fragment1 extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_fragment1, container, false);
 
-        pref1 = getActivity().getSharedPreferences("pref1",getActivity().MODE_PRIVATE);
+        pref1 = getActivity().getSharedPreferences("pref1", getActivity().MODE_PRIVATE);
         editor1 = pref1.edit();
 
         bm_listview = (ListView) v.findViewById(R.id.bookmark_listview);
-        TextView tx = (TextView)v.findViewById(R.id.empty2_text);
+        TextView tx = (TextView) v.findViewById(R.id.empty2_text);
         bm_listview.setEmptyView(tx);
+        bookmarkDB bmDB = new bookmarkDB();
+        bmDB.execute("http://192.168.200.199/select_bookmark.php");
 
-
-        list_bookmark = new ArrayList<>();
-        showbookmark();
-        final ArrayAdapter<String> bmadapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,list_bookmark);
-        bm_listview.setAdapter(bmadapter);
-
-
-
-        mBtn = (Button)v.findViewById(R.id.popup_menu);
-        mBtn.setOnClickListener(new View.OnClickListener(){
+        mBtn = (Button) v.findViewById(R.id.popup_menu);
+        mBtn.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                PopupMenu popup = new PopupMenu(getContext(),v); //팝업메뉴 객체만듦
+                PopupMenu popup = new PopupMenu(getContext(), v); //팝업메뉴 객체만듦
 
                 //xml파일에 메뉴 정의한 것 가져오기  위한 전개자 선언
                 MenuInflater inflater = popup.getMenuInflater();
@@ -84,10 +97,10 @@ public class Fragment1 extends Fragment {
                 inflater.inflate(R.menu.popupmenu, menu);
 
                 //메뉴 클릭했을 때 처리하는 부분
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener(){
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        switch(item.getItemId()){
+                        switch (item.getItemId()) {
                             case R.id.popup_select:
                                 mBtn.setBackgroundColor(Color.RED);
                                 break;
@@ -103,69 +116,114 @@ public class Fragment1 extends Fragment {
             }
         });
 
-        //container = (LinearLayout) v.findViewById(R.id.linearLayout);
-        //checkedList = new ArrayList<Toilet>(); //initializing list
-        //getDataFromIntent(); // 데이터받기 F3에서 보낸
-        //generateDataToContainerLayout();
 
         return v;
     }
 
-    private void getDataFromIntent() {
-        //checkedList = getIntent().getParcelableArrayListExtra("Checked List");
-        Log.i("ListActivity", "size" + checkedList.size());
-    }
+    private class bookmarkDB extends AsyncTask<String, Void, String> {
+        ProgressDialog progressDialog;
+        String data = "";
+        String errorString = null;
 
-    @SuppressLint("InflateParams")
-    private void generateDataToContainerLayout() {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
 
-        int i = 0;
-        if (checkedList.size() == i) { //do nothing
+            progressDialog = ProgressDialog.show(getContext(),
+                    "Please Wait", null, true, true);
         }
-        while (checkedList.size() > i) {
-            final Toilet toilet = checkedList.get(i);
-            LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-            View view = inflater.inflate(R.layout.row_listview, null,false);
 
-            ImageView Image = (ImageView) view.findViewById(R.id.imgsearch);
-            TextView toiletName = (TextView) view.findViewById(R.id.toiletname);
-            TextView toiletLine = (TextView) view.findViewById(R.id.toiletline);
-            CheckBox checked = (CheckBox) view.findViewById(R.id.checkboxbookmark);
-            checked.setVisibility(View.GONE);
-            if (toilet.isSelected()) {
-                Log.i("ListActivity", "here" + toilet.getToiletname());
-                toiletName.setText(toilet.getToiletname());
-                toiletLine.setText(toilet.getToiletline());
-                /*if (friend.isGender()) {
-                    genderImage.setImageResource(R.drawable.male);
-                } else {
-                    genderImage.setImageResource(R.drawable.female);
-                }*/
 
-                // add view after all
-                container.addView(view);
+        @Override
+        protected void onPostExecute(String data) {
+            super.onPostExecute(data);
+            progressDialog.dismiss();
+            Log.d(TAG, "response  - " + data);
+
+            if (data == null) {
+
+            } else {
+
+                mJsonString = data;
+                showbookmark();
+
             }
-
-            i++; // rise i
         }
-    }
-    //내부메모리에서 불러오기
-    public void showbookmark(){
-        String json = pref1.getString("bookmark", null);
-        if (json != null){
-            try{
-                JSONArray array = new JSONArray(json);
-                list_bookmark.clear();
 
-                for(int i = array.length() - 1; i>=0;i--){
-                    String url = array.optString(i);
-                    list_bookmark.add(url);
+        @Override
+        protected String doInBackground(String... params) {
+
+            /* 인풋 파라메터값 생성 */
+            String serverURL = params[0];
+            try {
+                /* 서버연결 */
+                URL url = new URL(serverURL);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.connect();
+
+                /* 안드로이드 -> 서버 파라메터값 전달 */
+                OutputStream outs = conn.getOutputStream();
+                //outs.write(param.getBytes("UTF-8"));
+                outs.flush();
+                outs.close();
+
+                /* 서버 -> 안드로이드 파라메터값 전달 */
+                InputStream is = null;
+                BufferedReader in = null;
+                is = conn.getInputStream();
+                in = new BufferedReader(new InputStreamReader(is), 8 * 1024);
+                String line = null;
+                StringBuffer buff = new StringBuffer();
+                while ((line = in.readLine()) != null) {
+                    buff.append(line + "\n");
                 }
+                data = buff.toString().trim();
 
-            } catch (JSONException e) {
+                /* 서버에서 응답 */
+                Log.e("RECV DATA", data);
+
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            return data;
         }
+
+
+    }
+
+    private void showbookmark() {
+        list_bookmark = new ArrayList<>();
+        try {
+            JSONObject jsonObject = new JSONObject(mJsonString);
+            JSONArray jsonArray = jsonObject.getJSONArray(TAG_JSON);
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+
+                JSONObject item = jsonArray.getJSONObject(i);
+
+
+                String name = item.getString(TAG_name);
+
+                list_bookmark.add(name);
+
+            }
+
+            ArrayAdapter<String> bmadapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,list_bookmark);
+
+            bm_listview.setAdapter(bmadapter);
+
+        } catch (JSONException e) {
+
+            Log.d(TAG, "showResult : ", e);
+        }
+
     }
 
 

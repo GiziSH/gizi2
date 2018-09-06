@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -19,11 +20,20 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.w3c.dom.Text;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -43,14 +53,15 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
     private ArrayList<Toilet> toilets;
     private final String TAG = ToiletAdapter.class.getSimpleName();
 
-    private List<String> list_bookmark;
+    List<String> list_bookmark;
     private SharedPreferences pref1;
     private SharedPreferences.Editor editor1;
     private boolean checkData;
 
     private ArrayList<Toilet> newitems;
     private ArrayList<Toilet> temp;
-
+    String Tnames;
+    Boolean Tbookmark;
 
 
     public ToiletAdapter(Activity activity, int resource,ArrayList<Toilet> toilets){
@@ -101,20 +112,22 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
         holder.image.setImageDrawable(listViewItem.getImg());
         holder.name.setText(listViewItem.getToiletname());
         holder.line.setText(listViewItem.getToiletline());
+
+
         pref1 = getContext().getSharedPreferences("pref1",MODE_PRIVATE);
         editor1 = pref1.edit();
-        list_bookmark  = new ArrayList<>();
-        showbookmark();
-
+        //list_bookmark  = new ArrayList<>();
+        //showbookmark();
+/*
         if (list_bookmark.size()!=0){
             holder.check.setChecked(list_bookmark.contains(listViewItem.getToiletname()));
             System.out.println(list_bookmark);
         }
-
+*/
 
 
         holder.check.setOnCheckedChangeListener(onCheckedChangeListener(listViewItem));
-
+        holder.check.setChecked(listViewItem.getBookmark());
 
         return convertView;
     }
@@ -125,24 +138,37 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
 
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (isChecked) {
-                        pref1 = getContext().getSharedPreferences("pref1",MODE_PRIVATE);
-                        editor1 = pref1.edit();
-                        list_bookmark  = new ArrayList<>();
-                        showbookmark();
-                        String str = new String(t.getToiletname());
-                        addbookmark(str);
-                        savebookmark();
-                        //System.out.println(getItemId(getPosition(t))); //출력값 6 =>금정역
-                        //System.out.println(getItem(getPosition(t))); //출력값 com.suhyun.gizi2.Toilet@af9f822
+                    updatebmDB Ubm = new updatebmDB();
+                    //list_bookmark = new ArrayList<>();
+                    Tnames = new String(t.getToiletname());
 
-                        t.setSelected(true);
-                    } else {
-                        showbookmark();
-                        String str = new String(t.getToiletname());
-                        deletebookmark(str);
-                        savebookmark();
-                        t.setSelected(false);
+                    if (isChecked) { //체크했음
+                        //pref1 = getContext().getSharedPreferences("pref1",MODE_PRIVATE);
+                        //editor1 = pref1.edit();
+                        //list_bookmark  = new ArrayList<>();
+                        //showbookmark();
+                        //list_bookmark.add(t.getToiletname());
+                        //System.out.println(list_bookmark);
+                        //System.out.println(list_bookmark.get(0));
+                        t.setBookmark("1");
+                        Tbookmark = new Boolean(t.getBookmark());
+                        Ubm.execute();
+
+                        //addbookmark(str);
+                        //savebookmark();
+
+                        //t.setSelected(true);
+                    } else { //체크해제
+                        t.setBookmark("0");
+                        Tbookmark = new Boolean(t.getBookmark());
+                        Ubm.execute();
+                        //list_bookmark.add(t.getToiletname());
+                        //Tbookmark = false;
+                        //showbookmark();
+                        //String str = new String(t.getToiletname());
+                        //deletebookmark(str);
+                        //savebookmark();
+                        //t.setSelected(false);
                     }
                 }
             };
@@ -164,6 +190,65 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
     }
 
     //즐겨찾기
+    public class updatebmDB extends AsyncTask<Void, Integer, Void> {
+        String data = "";
+        @Override
+        protected Void doInBackground(Void... unused) {
+            Log.e("name",Tnames+Tbookmark);
+            /* 인풋 파라메터값 생성 */
+            String param = "t_name=" + Tnames + "&t_bookmark=" + Tbookmark + "";
+            //String param = "t_name=" +Tnames + "";
+            try {
+                /* 서버연결 */
+                URL url = new URL(
+                        "http://192.168.200.199/update_bookmark.php");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.connect();
+
+                /* 안드로이드 -> 서버 파라메터값 전달 */
+                OutputStream outs = conn.getOutputStream();
+                outs.write(param.getBytes("UTF-8"));
+                outs.flush();
+                outs.close();
+
+                /* 서버 -> 안드로이드 파라메터값 전달 */
+                InputStream is = null;
+                BufferedReader in = null;
+
+
+                is = conn.getInputStream();
+                in = new BufferedReader(new InputStreamReader(is), 8 * 1024);
+                String line = null;
+                StringBuffer buff = new StringBuffer();
+                while ( ( line = in.readLine() ) != null )
+                {
+                    buff.append(line + "\n");
+                }
+                data = buff.toString().trim();
+                Log.e("RECV DATA1",data);
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            /* 서버에서 응답 */
+            Log.e("RECV DATA2",data);
+
+        }
+    }
+
+/*
     //배열안에 집어넣기
     public void addbookmark(String value) {
 
@@ -224,17 +309,20 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
             }
         }
     }
-
+*/
 
 
     //각 화장실 데이터 넣기
-    public void addtoilet(Drawable icon, String toiletname, String toiletline){
+    public void addtoilet(Drawable icon, String toiletname, String toiletline, String bookmark){
         Toilet toilet = new Toilet();
+
+
 
         toilet.setImg(icon);
         toilet.setToiletname(toiletname);
         toilet.setToiletline(toiletline);
-
+        toilet.setBookmark(bookmark);
+        Log.e("bookmark test ",toiletname+toilet.getBookmark());
         toilets.add(toilet);
     }
     //각 화장실 데이터 지우기

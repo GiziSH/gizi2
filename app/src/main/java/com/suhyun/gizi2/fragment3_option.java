@@ -35,23 +35,17 @@ public class fragment3_option extends Fragment {
 
     private static final String TAG_JSON="webnautes";
     private static final String TAG_sati = "$result";
+    private static final String TAG_cong = "$result";
     String mJsonString;
 
-    private String t_SR; //subway인지 restarea인지
     private String Tnames; //어느 화장실인가
     private TextView text_sati;
-    String res_sati;
+    private TextView text_cong;
 
     public fragment3_option() {
         // Required empty public constructor
     }
-    public static fragment3_option SRname(String str){
-        fragment3_option fragment = new fragment3_option();
-        Bundle args = new Bundle();
-        args.putString("t_SR", str);
-        fragment.setArguments(args);
-        return fragment;
-    }
+
     public static fragment3_option Tname(String str){
         fragment3_option fragment = new fragment3_option();
         Bundle args = new Bundle();
@@ -62,7 +56,6 @@ public class fragment3_option extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null){
-            t_SR = getArguments().getString("t_SR");
             Tnames = getArguments().getString("Tname");
         }
     }
@@ -86,15 +79,17 @@ public class fragment3_option extends Fragment {
             }
         });
 
-        GetData task = new GetData();
+        GetSati task = new GetSati();
         task.execute("http://192.168.200.199/select_sati.php");
+        GetCong task1 = new GetCong();
+        task1.execute("http://192.168.200.199/select_congestion.php");
         text_sati = (TextView)v.findViewById(R.id.sati); //만족도
-
+        text_cong = (TextView)v.findViewById(R.id.wait); //혼잡도
 
         return v;
     }
 
-    private class GetData extends AsyncTask<String, Void, String> {
+    private class GetSati extends AsyncTask<String, Void, String> {
         ProgressDialog progressDialog;
         String data = "";
         String errorString = null;
@@ -120,7 +115,7 @@ public class fragment3_option extends Fragment {
             else {
 
                 mJsonString = data;
-                showResult();
+                SatiResult();
 
             }
         }
@@ -172,68 +167,10 @@ public class fragment3_option extends Fragment {
             return data;
         }
 
-        /*
-        @Override
-        protected String doInBackground(String... params) {
-
-            String serverURL = params[0];
-
-
-            try {
-
-                URL url = new URL(serverURL);
-                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-
-
-                httpURLConnection.setReadTimeout(5000);
-                httpURLConnection.setConnectTimeout(5000);
-                httpURLConnection.connect();
-
-
-                int responseStatusCode = httpURLConnection.getResponseCode();
-                Log.d(TAG, "response code - " + responseStatusCode);
-
-                InputStream inputStream;
-                if(responseStatusCode == HttpURLConnection.HTTP_OK) {
-                    inputStream = httpURLConnection.getInputStream();
-                }
-                else{
-                    inputStream = httpURLConnection.getErrorStream();
-                }
-
-
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-
-                StringBuilder sb = new StringBuilder();
-                String line;
-
-                while((line = bufferedReader.readLine()) != null){
-                    sb.append(line);
-                }
-
-
-                bufferedReader.close();
-
-
-                return sb.toString().trim();
-
-
-            } catch (Exception e) {
-
-                Log.d(TAG, "InsertData: Error ", e);
-                errorString = e.toString();
-
-                return null;
-            }
-
-        }
-        */
-
 
     }
 
-    private void showResult(){
+    private void SatiResult(){
         try {
             JSONObject jsonObject = new JSONObject(mJsonString);
             JSONArray jsonArray = jsonObject.getJSONArray(TAG_JSON);
@@ -246,6 +183,118 @@ public class fragment3_option extends Fragment {
 
                 String res_sati = new String($result+"%");
                 text_sati.setText(res_sati);
+            }
+
+
+        } catch (JSONException e) {
+
+            Log.d(TAG, "showResult : ", e);
+        }
+
+    }
+
+    private class GetCong extends AsyncTask<String, Void, String> {
+        ProgressDialog progressDialog;
+        String data = "";
+        String errorString = null;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressDialog = ProgressDialog.show(getContext(),
+                    "Please Wait", null, true, true);
+        }
+
+
+        @Override
+        protected void onPostExecute(String data) {
+            super.onPostExecute(data);
+            progressDialog.dismiss();
+            Log.d(TAG, "response  - " + data);
+
+            if (data == null){
+
+            }
+            else {
+
+                mJsonString = data;
+                CongResult();
+
+            }
+        }
+        @Override
+        protected String doInBackground(String... params) {
+
+            /* 인풋 파라메터값 생성 */
+            String param = "t_name=" + Tnames +  "";
+            Log.e("POST",param);
+            String serverURL = params[0];
+            try {
+                /* 서버연결 */
+                URL url = new URL(serverURL);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.connect();
+
+                /* 안드로이드 -> 서버 파라메터값 전달 */
+                OutputStream outs = conn.getOutputStream();
+                outs.write(param.getBytes("UTF-8"));
+                outs.flush();
+                outs.close();
+
+                /* 서버 -> 안드로이드 파라메터값 전달 */
+                InputStream is = null;
+                BufferedReader in = null;
+                is = conn.getInputStream();
+                in = new BufferedReader(new InputStreamReader(is), 8 * 1024);
+                String line = null;
+                StringBuffer buff = new StringBuffer();
+                while ( ( line = in.readLine() ) != null )
+                {
+                    buff.append(line + "\n");
+                }
+                data = buff.toString().trim();
+
+                /* 서버에서 응답 */
+                Log.e("RECV DATA",data);
+
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return data;
+        }
+
+
+    }
+
+    private void CongResult(){
+        try {
+            JSONObject jsonObject = new JSONObject(mJsonString);
+            JSONArray jsonArray = jsonObject.getJSONArray(TAG_JSON);
+
+            for(int i=0;i<jsonArray.length();i++){
+
+                JSONObject item = jsonArray.getJSONObject(i);
+
+                int $result = item.getInt(TAG_cong);
+                if ($result>60 && $result<100) {
+                    String res_cong = new String("보통");
+                    text_cong.setText(res_cong);
+                } else if($result==100) {
+                    String res_cong = new String("혼잡");
+                    text_cong.setText(res_cong);
+                }else {
+                    String res_cong = new String("여유");
+                    text_cong.setText(res_cong);
+                }
+
             }
 
 

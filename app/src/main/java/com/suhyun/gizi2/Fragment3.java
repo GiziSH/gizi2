@@ -134,7 +134,7 @@ public class Fragment3 extends Fragment  {
                          SRname = "subway";
                          GetData task = new GetData();
                          task.execute("http://192.168.200.199/select_toilet.php");
-                         fragment3_option.SRname(SRname);
+                         //fragment3_option.SRname(SRname);
 
                          break;
                      case 2:
@@ -145,7 +145,7 @@ public class Fragment3 extends Fragment  {
                          SRname = "restarea";
                          GetData task2 = new GetData();
                          task2.execute("http://192.168.200.199/select_toilet.php");
-                         fragment3_option.SRname(SRname);
+                         //fragment3_option.SRname(SRname);
                          break;
                  }
              }
@@ -215,6 +215,7 @@ public class Fragment3 extends Fragment  {
     }
 
     //즐겨찾기
+    /*
     //배열안에 집어넣기
     public void addbookmark(String value) {
 
@@ -272,7 +273,7 @@ public class Fragment3 extends Fragment  {
             }
         }
     }
-
+    */
 
 
 
@@ -401,64 +402,7 @@ public class Fragment3 extends Fragment  {
 
             return data;
         }
-        /*
-        @Override
-        protected String doInBackground(String... params) {
 
-            String serverURL = params[0];
-
-
-            try {
-
-                URL url = new URL(serverURL);
-                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-
-
-                httpURLConnection.setReadTimeout(5000);
-                httpURLConnection.setConnectTimeout(5000);
-                httpURLConnection.connect();
-
-
-
-                int responseStatusCode = httpURLConnection.getResponseCode();
-                Log.d(TAG, "response code - " + responseStatusCode);
-
-                InputStream inputStream;
-                if(responseStatusCode == HttpURLConnection.HTTP_OK) {
-                    inputStream = httpURLConnection.getInputStream();
-                }
-                else{
-                    inputStream = httpURLConnection.getErrorStream();
-                }
-
-
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-
-                StringBuilder sb = new StringBuilder();
-                String line;
-
-                while((line = bufferedReader.readLine()) != null){
-                    sb.append(line);
-                }
-
-
-                bufferedReader.close();
-
-
-                return sb.toString().trim();
-
-
-            } catch (Exception e) {
-
-                Log.d(TAG, "InsertData: Error ", e);
-                errorString = e.toString();
-
-                return null;
-            }
-
-        }
-        */
     }
 
     private void showResult(){
@@ -474,17 +418,17 @@ public class Fragment3 extends Fragment  {
 
                 String name = item.getString(TAG_name);
                 String line = item.getString(TAG_line);
-                //String bookmark = item.getString(TAG_bookmark);
+                String bookmark = item.getString(TAG_bookmark);
 
                 HashMap<String, String> hashMap = new HashMap<>();
                 hashMap.put(TAG_name, name);
                 hashMap.put(TAG_line, line);
-                //hashMap.put(TAG_bookmark, bookmark);
+                hashMap.put(TAG_bookmark, bookmark);
                 mArrayList.add(hashMap);
 
                 //System.out.println(bookmark);
 
-                madapter.addtoilet(ContextCompat.getDrawable(getContext(),img[0]),name,line);
+                madapter.addtoilet(ContextCompat.getDrawable(getContext(),img[0]),name,line,bookmark);
 
             }
 
@@ -506,28 +450,7 @@ public class Fragment3 extends Fragment  {
 
     }
 
-    public void checkbookmark(){
-        Toilet toilet = new Toilet();
-        showbookmark();
-        for (int i=0;i<madapter.getCount();i++){
-            String str1 = new String(mArrayList.get(i).get(TAG_name));
-            showbookmark();
-            for (int j=0;j<list_bookmark.size();j++){
-                String str2 = new String(list_bookmark.get(j));
 
-                if (str1==str2){
-                    //madapter.
-                    //toilet.setSelected(true);
-
-                } else {
-                    //toilet.setSelected(false);
-                }
-            }
-
-
-        }
-
-    }
 
 
     //화장실 검색하기

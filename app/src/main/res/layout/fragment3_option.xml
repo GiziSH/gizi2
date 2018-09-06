@@ -77,7 +77,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="20dp"
-                    android:text="예상 대기 인원 : "/>
+                    android:text="화장실 내 혼잡도 : "/>
                 <TextView
                     android:id="@+id/wait"
                     android:layout_marginLeft="20dp"

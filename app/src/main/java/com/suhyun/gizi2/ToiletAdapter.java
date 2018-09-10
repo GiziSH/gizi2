@@ -200,7 +200,7 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
             /* 인풋 파라메터값 생성 */
             //String param = "t_name=" + Tnames + "&t_bookmark=" + Tbookmark + "";
             String param = "t_name=" +Tnames + "";
-            try {
+            try {//
                 /* 서버연결 */
                 URL url = new URL(
                         "http://192.168.200.199/update_bookmark.php");

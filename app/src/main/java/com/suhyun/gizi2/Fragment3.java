@@ -109,7 +109,7 @@ public class Fragment3 extends Fragment  {
         //task.execute("http://192.168.0.7/searchtest.php");
 
 
-
+//
         // 지하철역,휴게소 선택
         String [] values1 = {"선택","지하철역","휴게소"};
         MySpinner1 = (Spinner)v.findViewById(R.id.option);

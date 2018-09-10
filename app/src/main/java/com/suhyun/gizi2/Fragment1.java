@@ -256,7 +256,7 @@ public class Fragment1 extends Fragment {
 
         } catch (JSONException e) {
 
-            Log.d(TAG, "showResult : ", e);
+            //Log.d(TAG, "showResult : ", e);
         }
 
     }

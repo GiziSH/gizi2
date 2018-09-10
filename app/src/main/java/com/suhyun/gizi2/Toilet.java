@@ -32,7 +32,7 @@ public class Toilet implements Parcelable {
     }
 
     public Toilet() {
-
+//
     }
 
 

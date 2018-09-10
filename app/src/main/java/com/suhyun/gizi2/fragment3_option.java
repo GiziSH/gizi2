@@ -30,7 +30,7 @@ import java.net.URL;
 /**
  * Created by suhyun on 2018-07-08.
  */
-
+//
 public class fragment3_option extends Fragment {
     private static String TAG = "phptest_MainActivity";
 

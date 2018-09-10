@@ -34,7 +34,7 @@ import java.util.HashMap;
  */
 
 public class fragment3_toiletstate extends Fragment {
-
+//
     private static String TAG = "phptest_MainActivity";
 
     private static final String TAG_JSON="webnautes";

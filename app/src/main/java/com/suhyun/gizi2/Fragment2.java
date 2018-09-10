@@ -156,7 +156,7 @@ public class Fragment2 extends Fragment {
         editor.putString("lately", a);
         editor.commit();
     }
-
+//
     //내부메모리에서 불러오기
     public void showLately(){
         String json = pref.getString("lately", null);

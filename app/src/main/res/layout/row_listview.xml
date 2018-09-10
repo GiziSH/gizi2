@@ -19,7 +19,8 @@
         android:layout_height="50dp"
         android:gravity="fill_vertical"
         android:paddingLeft="5dp"
-        android:textColor="#000000"
+        android:textColor="@color/marinegreen"
+        android:textStyle="bold"
         android:textSize="20dp"/>
     <TextView
         android:id="@+id/toiletline"

@@ -40,11 +40,13 @@ public class fragment3_toiletstate extends Fragment {
     private static final String TAG_JSON="webnautes";
     private static final String TAG_doorNumber = "doorNumber";
     private static final String TAG_state = "state";
+    private static final String TAG_cong = "$result";
+
     private TextView mTextViewResult;
     String mJsonString;
     private TextView text_sati;
+    private TextView text_cong;
     private String Tnames; //어느 화장실인가
-    String res_sati; //넘겨받은 만족지수
     private static final String TAG_sati = "$result";
 
     //팝업창
@@ -72,6 +74,7 @@ public class fragment3_toiletstate extends Fragment {
         mTextViewResult = (TextView)v.findViewById(R.id.textView_main_result);
         fragment3_toiletstate.GetData task = new fragment3_toiletstate.GetData();
         task.execute("http://192.168.200.199/gizitest.php");
+        //task.execute("http://192.168.0.15/gizitest.php");
 
 
 
@@ -101,6 +104,8 @@ public class fragment3_toiletstate extends Fragment {
                                         , Toast.LENGTH_SHORT).show();
                                 updatecntDB cntDB = new updatecntDB();
                                 cntDB.execute("http://192.168.200.199/update_allcnt.php");
+                                //cntDB.execute("http://192.168.0.15/update_allcnt.php");
+
                                 if (items[selectedItem[0]]=="불만족"){
                                     F3_dissatisfaction f3_dis = new F3_dissatisfaction();
                                     android.support.v4.app.FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
@@ -110,6 +115,8 @@ public class fragment3_toiletstate extends Fragment {
                                 } else { //만족일 경우
                                     updatecntDB goodcntDB = new updatecntDB();
                                     goodcntDB.execute("http://192.168.200.199/update_goodcnt.php");
+                                    //goodcntDB.execute("http://192.168.0.15/update_goodcnt.php");
+
                                 }
                             }
                         })
@@ -127,8 +134,13 @@ public class fragment3_toiletstate extends Fragment {
         });
         satiDB satisati = new satiDB();
         satisati.execute("http://192.168.200.199/select_sati.php");
+        //satisati.execute("http://192.168.0.15/select_sati.php");
 
         text_sati = (TextView)v.findViewById(R.id.sati); //만족도
+
+        GetCong task1 = new GetCong();
+        task1.execute("http://192.168.200.199/select_congestion.php");
+        text_cong = (TextView)v.findViewById(R.id.wait); //혼잡도
 
 
         return v;
@@ -257,9 +269,9 @@ public class fragment3_toiletstate extends Fragment {
         hashMap.put("text5",  R.id.text5);
         hashMap.put("text6",  R.id.text6);
 
-
-        view.findViewById(hashMap.get(str)).setBackgroundColor(Color.rgb(255, 0, 0));
-        ((TextView)view.findViewById(hashMap.get(str))).setText("사용");
+        ((ImageView)view.findViewById(hashMap.get(str))).setImageResource(R.drawable.closedoor);
+        //view.findViewById(hashMap.get(str)).setBackgroundColor(Color.rgb(255, 0, 0));
+        //((TextView)view.findViewById(hashMap.get(str))).setText("사용");
     } //상태별로 색칠하기
 
     private class satiDB extends AsyncTask<String, Void, String> {
@@ -422,5 +434,123 @@ public class fragment3_toiletstate extends Fragment {
             Log.e("만족도 all", data);
 
         }
+    }
+
+    private class GetCong extends AsyncTask<String, Void, String> {
+        ProgressDialog progressDialog;
+        String data = "";
+        String errorString = null;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressDialog = ProgressDialog.show(getContext(),
+                    "Please Wait", null, true, true);
+        }
+
+
+        @Override
+        protected void onPostExecute(String data) {
+            super.onPostExecute(data);
+            progressDialog.dismiss();
+            Log.d(TAG, "response  - " + data);
+
+            if (data == null){
+
+            }
+            else {
+
+                mJsonString = data;
+                CongResult();
+
+            }
+        }
+        @Override
+        protected String doInBackground(String... params) {
+
+            /* 인풋 파라메터값 생성 */
+            String param = "t_name=" + Tnames +  "";
+            Log.e("POST",param);
+            String serverURL = params[0];
+            try {
+                /* 서버연결 */
+                URL url = new URL(serverURL);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.connect();
+
+                /* 안드로이드 -> 서버 파라메터값 전달 */
+                OutputStream outs = conn.getOutputStream();
+                outs.write(param.getBytes("UTF-8"));
+                outs.flush();
+                outs.close();
+
+                /* 서버 -> 안드로이드 파라메터값 전달 */
+                InputStream is = null;
+                BufferedReader in = null;
+                is = conn.getInputStream();
+                in = new BufferedReader(new InputStreamReader(is), 8 * 1024);
+                String line = null;
+                StringBuffer buff = new StringBuffer();
+                while ( ( line = in.readLine() ) != null )
+                {
+                    buff.append(line + "\n");
+                }
+                data = buff.toString().trim();
+
+                /* 서버에서 응답 */
+                Log.e("RECV DATA",data);
+
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return data;
+        }
+
+
+    }
+
+    private void CongResult(){
+        try {
+            JSONObject jsonObject = new JSONObject(mJsonString);
+            JSONArray jsonArray = jsonObject.getJSONArray(TAG_JSON);
+
+            for(int i=0;i<jsonArray.length();i++){
+
+                JSONObject item = jsonArray.getJSONObject(i);
+
+                int $result = item.getInt(TAG_cong);
+                if ($result>60 && $result<100) {
+                    String res_cong = new String("보통");
+                    text_cong.setText(res_cong);
+                    text_cong.setTextColor(Color.parseColor("#FF7F00"));
+
+                } else if($result==100) {
+                    String res_cong = new String("혼잡");
+                    text_cong.setText(res_cong);
+                    text_cong.setTextColor(Color.parseColor("#FF0000"));
+
+                }else {
+                    String res_cong = new String("여유");
+                    text_cong.setText(res_cong);
+                    text_cong.setTextColor(Color.parseColor("#00FF00"));
+
+                }
+
+            }
+
+
+        } catch (JSONException e) {
+
+            Log.d(TAG, "showResult : ", e);
+        }
+
     }
 }

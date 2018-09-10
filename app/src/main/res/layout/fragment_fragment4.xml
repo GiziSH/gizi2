@@ -5,6 +5,15 @@
     tools:context="com.suhyun.gizi2.Fragment1">
 
     <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:id="@+id/center"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_centerInParent="true"
+        android:background="@color/Chill"
+        android:text=""
+        android:textColor="#ffffff"
+        android:textSize="150sp"/>
     <Button
         android:id="@+id/btn_write"
         android:layout_width="wrap_content"

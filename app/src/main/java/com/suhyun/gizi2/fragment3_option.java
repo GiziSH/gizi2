@@ -2,6 +2,7 @@ package com.suhyun.gizi2;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -81,8 +82,12 @@ public class fragment3_option extends Fragment {
 
         GetSati task = new GetSati();
         task.execute("http://192.168.200.199/select_sati.php");
+        //task.execute("http://192.168.0.15/select_sati.php");
+
         GetCong task1 = new GetCong();
         task1.execute("http://192.168.200.199/select_congestion.php");
+        //task1.execute("http://192.168.0.15/select_congestion.php");
+
         text_sati = (TextView)v.findViewById(R.id.sati); //만족도
         text_cong = (TextView)v.findViewById(R.id.wait); //혼잡도
 
@@ -287,12 +292,18 @@ public class fragment3_option extends Fragment {
                 if ($result>60 && $result<100) {
                     String res_cong = new String("보통");
                     text_cong.setText(res_cong);
+                    text_cong.setTextColor(Color.parseColor("#FF7F00"));
+
                 } else if($result==100) {
                     String res_cong = new String("혼잡");
                     text_cong.setText(res_cong);
+                    text_cong.setTextColor(Color.parseColor("#FF0000"));
+
                 }else {
                     String res_cong = new String("여유");
                     text_cong.setText(res_cong);
+                    text_cong.setTextColor(Color.parseColor("#00FF00"));
+
                 }
 
             }

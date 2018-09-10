@@ -113,8 +113,12 @@ public class Fragment3 extends Fragment  {
         // 지하철역,휴게소 선택
         String [] values1 = {"선택","지하철역","휴게소"};
         MySpinner1 = (Spinner)v.findViewById(R.id.option);
-        final ArrayAdapter<String> adapterSpinner1 = new ArrayAdapter(this.getActivity(), android.R.layout.simple_spinner_item);
-        adapterSpinner1.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+        /*ArrayAdapter<String> adapterSpinner = new ArrayAdapter<String>(
+                this.getActivity(),
+                R.layout.spinner_simple
+        );*/
+        final ArrayAdapter<String> adapterSpinner1 = new ArrayAdapter(this.getActivity(), R.layout.spinner_simple);
+        adapterSpinner1.setDropDownViewResource( R.layout.spinner_simple);
         MySpinner1.setAdapter(adapterSpinner1);
         adapterSpinner1.addAll(values1);
         MySpinner1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -134,6 +138,8 @@ public class Fragment3 extends Fragment  {
                          SRname = "subway";
                          GetData task = new GetData();
                          task.execute("http://192.168.200.199/select_toilet.php");
+                         //task.execute("http://192.168.0.15/select_toilet.php");
+
                          //fragment3_option.SRname(SRname);
 
                          break;

@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -56,7 +58,7 @@ public class Fragment1 extends Fragment {
     String mJsonString;
     ArrayList<HashMap<String, String>> mArrayList;
 
-    Button mBtn; //편집버튼
+    ImageButton mBtn; //편집버튼
 
     private List<String> list_bookmark;
     private SharedPreferences pref1;
@@ -73,39 +75,72 @@ public class Fragment1 extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_fragment1, container, false);
 
-        pref1 = getActivity().getSharedPreferences("pref1", getActivity().MODE_PRIVATE);
-        editor1 = pref1.edit();
+        //pref1 = getActivity().getSharedPreferences("pref1", getActivity().MODE_PRIVATE);
+        //editor1 = pref1.edit();
 
         bm_listview = (ListView) v.findViewById(R.id.bookmark_listview);
         TextView tx = (TextView) v.findViewById(R.id.empty2_text);
         bm_listview.setEmptyView(tx);
         bookmarkDB bmDB = new bookmarkDB();
         bmDB.execute("http://192.168.200.199/select_bookmark.php");
+        //bmDB.execute("http://192.168.0.15/select_bookmark.php"); //티아모
 
-        mBtn = (Button) v.findViewById(R.id.popup_menu);
-        mBtn.setOnClickListener(new View.OnClickListener() {
+/*
+        mBtn = (ImageButton)v.findViewById(R.id.popup_menu);
+        mBtn.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
-                PopupMenu popup = new PopupMenu(getContext(), v); //팝업메뉴 객체만듦
 
+                final PopupMenu popup = new PopupMenu(getContext(),v); //팝업메뉴 객체만듦
                 //xml파일에 메뉴 정의한 것 가져오기  위한 전개자 선언
                 MenuInflater inflater = popup.getMenuInflater();
                 Menu menu = popup.getMenu();
-
                 //실제 메뉴 정의한 것 가져오는 부분 menu객체 넣어주기
                 inflater.inflate(R.menu.popupmenu, menu);
 
+
                 //메뉴 클릭했을 때 처리하는 부분
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener(){
+                    public int position;
+
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
+                        switch(item.getItemId()){
                             case R.id.popup_select:
-                                mBtn.setBackgroundColor(Color.RED);
+                                ArrayAdapter<String> rsadapter2 = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_multiple_choice,list_bookmark);
+                                bm_listview.setAdapter(rsadapter2);
+                                bm_listview.setItemsCanFocus(true);
+                                bm_listview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+                                popup.dismiss();
                                 break;
                             case R.id.popup_delete:
-                                mBtn.setBackgroundColor(Color.BLUE);
+                                SparseBooleanArray checkedItems = bm_listview.getCheckedItemPositions();
+                                int count = rsadapter.getCount() ;
+                                for (int i = count-1; i >= 0; i--) {
+                                    if (checkedItems.get(i)) {
+                                        list_names.remove(i) ;
+                                    }
+                                }
+                                // 모든 선택 상태 초기화.
+                                rs_listview.clearChoices() ;
+                                saveLately();
+                                rsadapter.notifyDataSetChanged();
+                                rs_listview.setAdapter(rsadapter);
+                                break;
+                            case R.id.popup_allselect:
+                                rsadapter2 = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_multiple_choice,list_bookmark);
+                                rs_listview.setAdapter(rsadapter2);
+                                rs_listview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+                                popup.dismiss();
+
+                                count = rsadapter.getCount() ;
+
+                                for (int i=0; i<count; i++) {
+                                    rs_listview.setItemChecked(i, true) ;
+                                }
+                                popup.dismiss();
+
                                 break;
 
                         }
@@ -116,7 +151,7 @@ public class Fragment1 extends Fragment {
             }
         });
 
-
+*/
         return v;
     }
 
@@ -215,7 +250,7 @@ public class Fragment1 extends Fragment {
 
             }
 
-            ArrayAdapter<String> bmadapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,list_bookmark);
+            ArrayAdapter<String> bmadapter = new ArrayAdapter<String>(getActivity(),R.layout.simple_list,list_bookmark);
 
             bm_listview.setAdapter(bmadapter);
 

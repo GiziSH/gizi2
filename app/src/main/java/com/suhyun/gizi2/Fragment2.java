@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -31,7 +33,7 @@ import java.util.List;
  * A simple {@link Fragment} subclass.
  */
 public class Fragment2 extends Fragment {
-    Button mBtn;
+    ImageButton mBtn;
     Button deleteBtn;
     private List<String> list_names;
     private SharedPreferences pref;
@@ -59,11 +61,11 @@ public class Fragment2 extends Fragment {
 
         list_names = new ArrayList<>();
         showLately();
-        final ArrayAdapter<String> rsadapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,list_names);
+        final ArrayAdapter<String> rsadapter = new ArrayAdapter<String>(getActivity(),R.layout.simple_list,list_names);
         rs_listview.setAdapter(rsadapter);
 
 
-        mBtn = (Button)v.findViewById(R.id.popup_menu);
+        mBtn = (ImageButton)v.findViewById(R.id.popup_menu);
         mBtn.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -131,10 +133,12 @@ public class Fragment2 extends Fragment {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String selected_item = new String(String.valueOf(parent.getItemAtPosition(position)));
+
 
                 fragment3_option op = new fragment3_option();
                 android.support.v4.app.FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.fragment_container, op);
+                fragmentTransaction.replace(R.id.fragment_container, fragment3_option.Tname(selected_item));
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
             }

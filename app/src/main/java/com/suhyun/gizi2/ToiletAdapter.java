@@ -138,7 +138,7 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
 
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    updatebmDB Ubm = new updatebmDB();
+                    //updatebmDB Ubm = new updatebmDB();
                     //list_bookmark = new ArrayList<>();
                     Tnames = new String(t.getToiletname());
 
@@ -151,7 +151,8 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
                         //System.out.println(list_bookmark);
                         //System.out.println(list_bookmark.get(0));
                         t.setBookmark("1");
-                        Tbookmark = new Boolean(t.getBookmark());
+                        //Tbookmark = new Boolean(t.getBookmark());
+                        updatebmDB Ubm = new updatebmDB();
                         Ubm.execute();
 
                         //addbookmark(str);
@@ -160,7 +161,8 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
                         //t.setSelected(true);
                     } else { //체크해제
                         t.setBookmark("0");
-                        Tbookmark = new Boolean(t.getBookmark());
+                        updatebmDB Ubm = new updatebmDB();
+                        //Tbookmark = new Boolean(t.getBookmark());
                         Ubm.execute();
                         //list_bookmark.add(t.getToiletname());
                         //Tbookmark = false;
@@ -196,8 +198,8 @@ public class ToiletAdapter extends ArrayAdapter<Toilet> {
         protected Void doInBackground(Void... unused) {
             Log.e("name",Tnames+Tbookmark);
             /* 인풋 파라메터값 생성 */
-            String param = "t_name=" + Tnames + "&t_bookmark=" + Tbookmark + "";
-            //String param = "t_name=" +Tnames + "";
+            //String param = "t_name=" + Tnames + "&t_bookmark=" + Tbookmark + "";
+            String param = "t_name=" +Tnames + "";
             try {
                 /* 서버연결 */
                 URL url = new URL(

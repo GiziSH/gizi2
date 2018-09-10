@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/menu" >
+    <shape xmlns:android="http://schemas.android.com/apk/res/android">
+        <solid android:color="@color/Tropicalpink" />
+        <stroke android:color="#000000ff" android:width="4dp" />
+        <corners android:radius="10dp" />
+    </shape>
+    </item>
+</selector>
+
